@@ -12,8 +12,8 @@ import {
 } from "antd";
 import {
   UserOutlined,
-  ReadOutlined,
-  BookOutlined,
+  PlusCircleOutlined,
+  WalletOutlined,
   SettingOutlined,
   LogoutOutlined,
 } from "@ant-design/icons";
@@ -28,12 +28,12 @@ const { Header, Content, Footer, Sider } = Layout;
 const menuItems = [
   {
     key: "1",
-    icon: <BookOutlined />,
-    label: "Dasboard",
+    icon: <WalletOutlined />,
+    label: "Finansal Durum Panosu",
   },
   {
     key: "2",
-    icon: <ReadOutlined />,
+    icon: <PlusCircleOutlined />,
     label: "Gelir/Gider Ekle",
   },
 ];
@@ -63,11 +63,11 @@ const MainPage = () => {
   const renderContent = useMemo(() => {
     switch (selectedKey) {
       case "1":
-        return { title: "Dashboard", component: <DashboardPage /> };
+        return { title: "Finansal Durum Panosu", component: <DashboardPage /> };
       case "2":
         return { title: "Gelir/Gider Ekle", component: <IncomeExpensePage /> };
       default:
-        return { title: "Dashborad", component: <DashboardPage /> };
+        return { title: "Finansal Durum Panosu", component: <DashboardPage /> };
     }
   }, [selectedKey]);
   const { title, component } = renderContent;

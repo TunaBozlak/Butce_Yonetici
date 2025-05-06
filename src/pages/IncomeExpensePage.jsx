@@ -1,0 +1,222 @@
+import React, { useState } from "react";
+import {
+  Card,
+  Form,
+  Segmented,
+  InputNumber,
+  Input,
+  Select,
+  DatePicker,
+  Button,
+  Space,
+  Statistic,
+  List,
+  Avatar,
+  Row,
+  Col,
+  Popover,
+} from "antd";
+import { ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
+
+const { Option } = Select;
+const maxLatestTransactions = 5;
+
+const IncomeExpensePage = () => {
+  const [form] = Form.useForm();
+  const [type, setType] = useState("gelir");
+  const [activePopoverId, setActivePopoverId] = useState(null);
+  const [balance, setBalance] = useState(1500);
+  const [latestTransactions, setLatestTransactions] = useState([
+    {
+      id: 1,
+      type: "gelir",
+      amount: 500,
+      category: "Maaş",
+      date: new Date(Date.now() - 86400000),
+      description: "Mayıs ayı maaşı",
+    },
+    {
+      id: 2,
+      type: "gider",
+      amount: 120,
+      category: "Market",
+      date: new Date(),
+      description: "Haftalık market alışverişi",
+    },
+  ]);
+
+  const onFinish = (values) => {
+    console.log("Başarılı:", values);
+    const newTransaction = {
+      ...values,
+      type,
+      date: values.date.toDate(),
+      id: Date.now(),
+    };
+    setLatestTransactions([
+      newTransaction,
+      ...latestTransactions.slice(0, maxLatestTransactions - 1),
+    ]);
+    if (type === "gelir") {
+      setBalance(balance + values.amount);
+    } else {
+      setBalance(balance - values.amount);
+    }
+    form.resetFields();
+  };
+
+  const handleTypeChange = (value) => {
+    setType(value);
+  };
+
+  const handlePopoverVisibleChange = (visible, itemId) => {
+    setActivePopoverId(visible ? itemId : null);
+  };
+
+  return (
+    <div style={{ padding: 24 }}>
+      <Row gutter={24}>
+        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+          <Card title="Yeni Gelir / Gider Ekle" bordered={false}>
+            <Form form={form} layout="vertical" onFinish={onFinish}>
+              <Form.Item label="İşlem Tipi">
+                <Segmented
+                  options={[
+                    { label: "Gelir", value: "gelir" },
+                    { label: "Gider", value: "gider" },
+                  ]}
+                  value={type}
+                  onChange={handleTypeChange}
+                />
+              </Form.Item>
+
+              <Space>
+                <Form.Item
+                  name="amount"
+                  label="Miktar"
+                  rules={[
+                    { required: true, message: "Lütfen miktarı giriniz!" },
+                  ]}
+                >
+                  <InputNumber
+                    prefix={type === "gider" ? "-" : "+"}
+                    style={{ width: "150px" }}
+                    formatter={(value) => `${value} TL`}
+                    parser={(value) => value.replace(" TL", "")}
+                  />
+                </Form.Item>
+
+                <Form.Item
+                  name="category"
+                  label="Kategori"
+                  rules={[
+                    { required: true, message: "Lütfen bir kategori seçiniz!" },
+                  ]}
+                >
+                  <Select
+                    placeholder="Kategori seçiniz"
+                    showSearch
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .indexOf(input.toLowerCase()) >= 0
+                    }
+                    style={{ width: "200px" }}
+                  >
+                    <Option value="maas">Maaş</Option>
+                    <Option value="kira">Kira</Option>
+                    <Option value="market">Market</Option>
+                    <Option value="fatura">Fatura</Option>
+                    <Option value="egitim">Eğitim</Option>
+                    <Option value="saglik">Sağlık</Option>
+                    <Option value="ulasim">Ulaşım</Option>
+                    <Option value="eglence">Eglence</Option>
+                    <Option value="yatirim">Yatirim</Option>
+                    <Option value="hediye">Hediye</Option>
+                    <Option value="diger_gelir">Diğer Gelir</Option>
+                    <Option value="diger_gider">Diğer Gider</Option>
+                  </Select>
+                </Form.Item>
+
+                <Form.Item
+                  name="date"
+                  label="Tarih"
+                  rules={[
+                    { required: true, message: "Lütfen tarihi seçiniz!" },
+                  ]}
+                >
+                  <DatePicker style={{ width: "150px" }} />
+                </Form.Item>
+              </Space>
+
+              <Form.Item name="description" label="Açıklama">
+                <Input.TextArea
+                  rows={2}
+                  placeholder="Açıklama giriniz (isteğe bağlı)"
+                />
+              </Form.Item>
+
+              <Form.Item>
+                <Button type="primary" htmlType="submit">
+                  Kaydet
+                </Button>
+              </Form.Item>
+            </Form>
+          </Card>
+        </Col>
+        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
+          <Card title="Anlık Bakiye" bordered={false}>
+            <Statistic
+              title="Toplam Bakiye"
+              value={`${balance} TL`}
+              precision={2}
+              valueStyle={{ color: balance >= 0 ? "#3f8600" : "#cf1322" }}
+            />
+          </Card>
+          <Card title="Son İşlemler" bordered={false} style={{ marginTop: 24 }}>
+            <List
+              itemLayout="horizontal"
+              dataSource={latestTransactions}
+              renderItem={(item) => (
+                <Popover
+                  key={item.id}
+                  content={item.description}
+                  title={item.description ? "Açıklama" : null}
+                  trigger="click"
+                  visible={activePopoverId === item.id}
+                  onVisibleChange={(visible) =>
+                    handlePopoverVisibleChange(visible, item.id)
+                  }
+                >
+                  <List.Item style={{ cursor: "pointer" }}>
+                    <List.Item.Meta
+                      avatar={
+                        <Avatar
+                          icon={
+                            item.type === "gelir" ? (
+                              <ArrowUpOutlined style={{ color: "#3f8600" }} />
+                            ) : (
+                              <ArrowDownOutlined style={{ color: "#cf1322" }} />
+                            )
+                          }
+                        />
+                      }
+                      title={`${item.category} (${new Date(
+                        item.date
+                      ).toLocaleDateString()})`}
+                      description={`${item.type === "gelir" ? "+" : "-"}${
+                        item.amount
+                      } TL`}
+                    />
+                  </List.Item>
+                </Popover>
+              )}
+            />
+          </Card>
+        </Col>
+      </Row>
+    </div>
+  );
+};
+
+export default IncomeExpensePage;

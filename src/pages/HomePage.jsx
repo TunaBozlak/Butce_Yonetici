@@ -8,13 +8,11 @@ const { Header, Footer, Content } = Layout;
 
 const HomePage = () => {
   const currentYear = new Date().getFullYear();
-  const size = "large";
 
   return (
     <Layout className="layout">
       <Header className="header">
         <h1 className="header-title">Bütçe Yönetici</h1>
-
         <Menu
           mode="horizontal"
           theme="light"
@@ -24,9 +22,7 @@ const HomePage = () => {
             <Menu.Item icon={<LoginOutlined />}>Giriş Yap</Menu.Item>
           </Link>
           <Link to="/register">
-            <Menu.Item o icon={<UserAddOutlined />}>
-              Kayıt Ol
-            </Menu.Item>
+            <Menu.Item icon={<UserAddOutlined />}>Kayıt Ol</Menu.Item>
           </Link>
         </Menu>
       </Header>

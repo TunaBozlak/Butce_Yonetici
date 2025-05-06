@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Row,
   Col,
@@ -10,6 +10,9 @@ import {
   Table,
   Button,
   DatePicker,
+  Modal,
+  Form,
+  Select,
 } from "antd";
 import {
   ArrowUpOutlined,
@@ -32,6 +35,7 @@ import {
 } from "recharts";
 
 const { Title } = Typography;
+const { TextArea } = Input;
 
 const COLORS = ["#3f8600", "#cf1322"];
 
@@ -56,6 +60,7 @@ const birlesikListeVerisi = [
     amount: 10000,
     type: "Gider",
     date: "2025-05-01",
+    description: "merhaba",
   },
   {
     id: "2",
@@ -107,128 +112,178 @@ const birlesikListeVerisi = [
     date: "2025-06-01",
   },
 ];
-const sutunlar = [
-  {
-    title: "Kategori",
-    dataIndex: "category",
-    key: "category",
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-    }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          placeholder="Kategoriye göre ara"
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={confirm}
-          style={{ marginBottom: 8, display: "block" }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={confirm}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Ara
-          </Button>
-          <Button onClick={clearFilters} size="small" style={{ width: 90 }}>
-            Temizle
-          </Button>
-        </Space>
-      </div>
-    ),
-    onFilter: (value, record) =>
-      record.category.toLowerCase().includes(value.toLowerCase()),
-    filterIcon: (filtered) => (
-      <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
-    ),
-  },
-  {
-    title: "Tarih",
-    dataIndex: "date",
-    key: "date",
-    sorter: (a, b) => new Date(a.date) - new Date(b.date),
-    sortDirections: ["ascend", "descend"],
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-    }) => (
-      <div style={{ padding: 8 }}>
-        <DatePicker
-          onChange={(date, dateString) =>
-            setSelectedKeys(dateString ? [dateString] : [])
-          }
-          style={{ marginBottom: 8, display: "block" }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={confirm}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Filtrele
-          </Button>
-          <Button onClick={clearFilters} size="small" style={{ width: 90 }}>
-            Temizle
-          </Button>
-        </Space>
-      </div>
-    ),
-    onFilter: (value, record) => record.date.startsWith(value),
-  },
-  {
-    title: "Tutar",
-    dataIndex: "amount",
-    key: "amount",
-    render: (amount) => `${amount} TL`,
-    sorter: (a, b) => a.amount - b.amount,
-  },
-  {
-    title: "Tip",
-    dataIndex: "type",
-    key: "type",
-    render: (type) => (
-      <Space>
-        {type === "Gelir" ? (
-          <ArrowUpOutlined style={{ color: COLORS[0] }} />
-        ) : (
-          <ArrowDownOutlined style={{ color: COLORS[1] }} />
-        )}
-        {type}
-      </Space>
-    ),
-    filters: [
-      {
-        text: "Gelir",
-        value: "Gelir",
-      },
-      {
-        text: "Gider",
-        value: "Gider",
-      },
-    ],
-    onFilter: (value, record) => record.type === value,
-  },
-];
 
 const DashboardPage = () => {
+  const kategoriSecenekleri = [
+    { value: "maas", label: "Maaş" },
+    { value: "kira", label: "Kira" },
+    { value: "market", label: "Market" },
+    { value: "fatura", label: "Fatura" },
+    { value: "egitim", label: "Eğitim" },
+    { value: "saglik", label: "Sağlık" },
+    { value: "ulasim", label: "Ulaşım" },
+    { value: "eglence", label: "Eğlence" },
+    { value: "yatirim", label: "Yatırım" },
+    { value: "hediye", label: "Hediye" },
+    { value: "diger_gelir", label: "Diğer Gelir" },
+    { value: "diger_gider", label: "Diğer Gider" },
+  ];
+
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [form] = Form.useForm();
   const toplamGelir = gelirGiderVerisi[0].value;
   const toplamGider = gelirGiderVerisi[1].value;
   const kalanBakiye = toplamGelir - toplamGider;
   const gelirYuzdesi = (toplamGelir / (toplamGelir + toplamGider)) * 100;
   const giderYuzdesi = (toplamGider / (toplamGelir + toplamGider)) * 100;
 
+  const showModal = (record) => {
+    setSelectedRecord(record);
+    setIsModalVisible(true);
+    form.setFieldsValue(record);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    setSelectedRecord(null);
+    form.resetFields();
+  };
+
+  const handleDelete = () => {
+    console.log("Silmek istediğiniz kayıt:", selectedRecord);
+    setIsModalVisible(false);
+    setSelectedRecord(null);
+    form.resetFields();
+  };
+
+  const handleUpdate = () => {
+    form
+      .validateFields()
+      .then((values) => {
+        console.log("Güncellenen değerler:", values);
+        setIsModalVisible(false);
+        setSelectedRecord(null);
+        form.resetFields();
+      })
+      .catch((errorInfo) => {
+        console.log("Validate Failed:", errorInfo);
+      });
+  };
+  const sutunlar = [
+    {
+      title: "Kategori",
+      dataIndex: "category",
+      key: "category",
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <Input
+            placeholder="Kategoriye göre ara"
+            value={selectedKeys[0]}
+            onChange={(e) =>
+              setSelectedKeys(e.target.value ? [e.target.value] : [])
+            }
+            onPressEnter={confirm}
+            style={{ marginBottom: 8, display: "block" }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={confirm}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Ara
+            </Button>
+            <Button onClick={clearFilters} size="small" style={{ width: 90 }}>
+              Temizle
+            </Button>
+          </Space>
+        </div>
+      ),
+      onFilter: (value, record) =>
+        record.category.toLowerCase().includes(value.toLowerCase()),
+      filterIcon: (filtered) => (
+        <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
+      ),
+    },
+    {
+      title: "Tarih",
+      dataIndex: "date",
+      key: "date",
+      sorter: (a, b) => new Date(a.date) - new Date(b.date),
+      sortDirections: ["ascend", "descend"],
+      filterDropdown: ({
+        setSelectedKeys,
+        selectedKeys,
+        confirm,
+        clearFilters,
+      }) => (
+        <div style={{ padding: 8 }}>
+          <DatePicker
+            onChange={(date, dateString) =>
+              setSelectedKeys(dateString ? [dateString] : [])
+            }
+            style={{ marginBottom: 8, display: "block" }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={confirm}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{ width: 90 }}
+            >
+              Filtrele
+            </Button>
+            <Button onClick={clearFilters} size="small" style={{ width: 90 }}>
+              Temizle
+            </Button>
+          </Space>
+        </div>
+      ),
+      onFilter: (value, record) => record.date.startsWith(value),
+    },
+    {
+      title: "Tutar",
+      dataIndex: "amount",
+      key: "amount",
+      render: (amount) => `${amount} TL`,
+      sorter: (a, b) => a.amount - b.amount,
+    },
+    {
+      title: "Tip",
+      dataIndex: "type",
+      key: "type",
+      render: (type) => (
+        <Space>
+          {type === "Gelir" ? (
+            <ArrowUpOutlined style={{ color: COLORS[0] }} />
+          ) : (
+            <ArrowDownOutlined style={{ color: COLORS[1] }} />
+          )}
+          {type}
+        </Space>
+      ),
+      filters: [
+        {
+          text: "Gelir",
+          value: "Gelir",
+        },
+        {
+          text: "Gider",
+          value: "Gider",
+        },
+      ],
+      onFilter: (value, record) => record.type === value,
+    },
+  ];
   return (
     <div style={{ padding: 24 }}>
       <Row gutter={24}>
@@ -321,10 +376,67 @@ const DashboardPage = () => {
       <Row gutter={24} style={{ marginTop: 24 }}>
         <Col span={24}>
           <Card title="Gelir ve Gider Detayları">
-            <Table dataSource={birlesikListeVerisi} columns={sutunlar} />
+            <Table
+              dataSource={birlesikListeVerisi}
+              columns={sutunlar.map((col) => ({
+                ...col,
+                onCell: (record) => ({
+                  onClick: () => {
+                    showModal(record);
+                  },
+                }),
+                style: { cursor: "pointer" },
+              }))}
+            />
           </Card>
         </Col>
       </Row>
+
+      <Modal
+        title={selectedRecord ? `${selectedRecord.type} Detayı` : "Detay"}
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        footer={[
+          <Button key="sil" danger onClick={handleDelete}>
+            Sil
+          </Button>,
+          <Button key="guncelle" type="primary" onClick={handleUpdate}>
+            Güncelle
+          </Button>,
+          <Button key="iptal" onClick={handleCancel}>
+            İptal
+          </Button>,
+        ]}
+      >
+        {selectedRecord && (
+          <Form form={form} layout="vertical" initialValues={selectedRecord}>
+            <Form.Item label="Kategori" name="category">
+              <Select placeholder="Kategori Seçin">
+                {kategoriSecenekleri.map((secenek) => (
+                  <Option key={secenek.value} value={secenek.value}>
+                    {secenek.label}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
+
+            <Form.Item label="Tutar" name="amount">
+              <Input type="number" />
+            </Form.Item>
+            <Form.Item label="Tip" name="type">
+              <Input disabled />
+            </Form.Item>
+            {selectedRecord.description && (
+              <Form.Item label="Açıklama" name="description">
+                <TextArea rows={4} />
+              </Form.Item>
+            )}
+            {!selectedRecord.description && (
+              <p>Bu kaydın açıklaması bulunmuyor.</p>
+            )}
+          </Form>
+        )}
+      </Modal>
     </div>
   );
 };

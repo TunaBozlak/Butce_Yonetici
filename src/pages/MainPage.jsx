@@ -16,10 +16,13 @@ import {
   WalletOutlined,
   SettingOutlined,
   LogoutOutlined,
+  CalendarOutlined,
 } from "@ant-design/icons";
 import DashboardPage from "./DashboardPage";
 import IncomeExpensePage from "./IncomeExpensePage";
 import "./MainPage.css";
+
+import CalendarPage from "./CalendarPage";
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -35,6 +38,11 @@ const menuItems = [
     key: "2",
     icon: <PlusCircleOutlined />,
     label: "Gelir/Gider Ekle",
+  },
+  {
+    key: "3",
+    icon: <CalendarOutlined />,
+    label: "Takvim",
   },
 ];
 
@@ -66,6 +74,8 @@ const MainPage = () => {
         return { title: "Finansal Durum Panosu", component: <DashboardPage /> };
       case "2":
         return { title: "Gelir/Gider Ekle", component: <IncomeExpensePage /> };
+      case "3":
+        return { title: "Takvim", component: <CalendarPage /> };
       default:
         return { title: "Finansal Durum Panosu", component: <DashboardPage /> };
     }

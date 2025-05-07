@@ -13,6 +13,7 @@ import {
   Modal,
   Form,
   Select,
+  message,
 } from "antd";
 import {
   ArrowUpOutlined,
@@ -20,6 +21,7 @@ import {
   MoneyCollectOutlined,
   ShoppingCartOutlined,
   WalletOutlined,
+  MailOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
 import {
@@ -36,6 +38,7 @@ import {
 
 const { Title } = Typography;
 const { TextArea } = Input;
+const { Option } = Select;
 
 const COLORS = ["#3f8600", "#cf1322"];
 
@@ -135,8 +138,9 @@ const DashboardPage = () => {
   const toplamGelir = gelirGiderVerisi[0].value;
   const toplamGider = gelirGiderVerisi[1].value;
   const kalanBakiye = toplamGelir - toplamGider;
-  const gelirYuzdesi = (toplamGelir / (toplamGelir + toplamGider)) * 100;
-  const giderYuzdesi = (toplamGider / (toplamGelir + toplamGider)) * 100;
+  const toplam = toplamGelir + toplamGider;
+  const gelirYuzdesi = (toplamGelir / toplam) * 100;
+  const giderYuzdesi = (toplamGider / toplam) * 100;
 
   const showModal = (record) => {
     setSelectedRecord(record);
@@ -170,6 +174,19 @@ const DashboardPage = () => {
         console.log("Validate Failed:", errorInfo);
       });
   };
+  const handleSendReport = () => {
+    console.log("Rapor gönderiliyor...");
+    console.log("Gelir ve Gider Verisi:", birlesikListeVerisi);
+
+    message.success("Gelir ve giderler mailinize eposta ile gönderildi.");
+
+    notification.success({
+      message: "Rapor Gönderildi",
+      description: "Gelir ve giderler mailinize eposta ile gönderildi.",
+      placement: "topRight", // or 'bottomRight', 'topLeft', 'bottomLeft'
+    });
+  };
+
   const sutunlar = [
     {
       title: "Kategori",
@@ -283,6 +300,17 @@ const DashboardPage = () => {
       ],
       onFilter: (value, record) => record.type === value,
     },
+    {
+      title: "İşlemler",
+      key: "actions",
+      render: (_, record) => (
+        <Space size="middle">
+          <Button type="link" onClick={() => showModal(record)}>
+            Düzenle
+          </Button>
+        </Space>
+      ),
+    },
   ];
   return (
     <div style={{ padding: 24 }}>
@@ -375,7 +403,26 @@ const DashboardPage = () => {
 
       <Row gutter={24} style={{ marginTop: 24 }}>
         <Col span={24}>
-          <Card title="Gelir ve Gider Detayları">
+          <Card
+            title={
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <span>Gelir ve Gider Detayları</span>
+                <Button
+                  type="primary"
+                  icon={<MailOutlined />}
+                  onClick={handleSendReport}
+                >
+                  Rapor Al
+                </Button>
+              </div>
+            }
+          >
             <Table
               dataSource={birlesikListeVerisi}
               columns={sutunlar.map((col) => ({
@@ -387,6 +434,7 @@ const DashboardPage = () => {
                 }),
                 style: { cursor: "pointer" },
               }))}
+              rowKey="id"
             />
           </Card>
         </Col>

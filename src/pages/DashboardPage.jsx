@@ -24,6 +24,7 @@ import {
   MailOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
+import "antd/dist/reset.css";
 import {
   ResponsiveContainer,
   PieChart,
@@ -174,17 +175,12 @@ const DashboardPage = () => {
         console.log("Validate Failed:", errorInfo);
       });
   };
+
   const handleSendReport = () => {
     console.log("Rapor gönderiliyor...");
     console.log("Gelir ve Gider Verisi:", birlesikListeVerisi);
 
-    message.success("Gelir ve giderler mailinize eposta ile gönderildi.");
-
-    notification.success({
-      message: "Rapor Gönderildi",
-      description: "Gelir ve giderler mailinize eposta ile gönderildi.",
-      placement: "topRight", // or 'bottomRight', 'topLeft', 'bottomLeft'
-    });
+    alert("Gelir ve Gider bilgileriniz e-posta adresinize gönderilmiştir.");
   };
 
   const sutunlar = [

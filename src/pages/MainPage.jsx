@@ -75,7 +75,10 @@ const MainPage = () => {
       case "2":
         return { title: "Gelir/Gider Ekle", component: <IncomeExpensePage /> };
       case "3":
-        return { title: "Takvim", component: <CalendarPage /> };
+        return {
+          title: "Takvim / Zaman Çizelgesi",
+          component: <CalendarPage />,
+        };
       default:
         return { title: "Finansal Durum Panosu", component: <DashboardPage /> };
     }

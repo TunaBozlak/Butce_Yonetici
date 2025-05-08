@@ -120,7 +120,6 @@ const CalendarPage = () => {
 
   return (
     <div>
-      <h1>Zaman Çizelgesi</h1>
       <Calendar dateCellRender={dateCellRender} onSelect={onSelect} />
 
       <Modal

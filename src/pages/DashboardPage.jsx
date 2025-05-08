@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Row,
   Col,
@@ -13,7 +13,6 @@ import {
   Modal,
   Form,
   Select,
-  message,
 } from "antd";
 import {
   ArrowUpOutlined,
@@ -36,6 +35,7 @@ import {
   YAxis,
   Tooltip,
 } from "recharts";
+import { IncomeExpenseContext } from "../context/IncomeExpenseContext";
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -46,75 +46,6 @@ const COLORS = ["#3f8600", "#cf1322"];
 const gelirGiderVerisi = [
   { name: "Gelir", value: 50000, type: "Gelir" },
   { name: "Gider", value: 20000, type: "Gider" },
-];
-
-const gelirZamanCizelgesiVerisi = [
-  { ay: "Oca", gelir: 25 },
-  { ay: "Şub", gelir: 38 },
-  { ay: "Mar", gelir: 35 },
-  { ay: "Nis", gelir: 42 },
-  { ay: "May", gelir: 48 },
-  { ay: "Haz", gelir: 40 },
-];
-
-const birlesikListeVerisi = [
-  {
-    id: "1",
-    category: "Kira",
-    amount: 10000,
-    type: "Gider",
-    date: "2025-05-01",
-    description: "merhaba",
-  },
-  {
-    id: "2",
-    category: "Market",
-    amount: 5000,
-    type: "Gider",
-    date: "2025-05-05",
-  },
-  {
-    id: "3",
-    category: "Fatura",
-    amount: 5000,
-    type: "Gider",
-    date: "2025-05-10",
-  },
-  {
-    id: "4",
-    category: "Maaş",
-    amount: 20000,
-    type: "Gelir",
-    date: "2025-05-15",
-  },
-  {
-    id: "5",
-    category: "Serbest Meslek",
-    amount: 15000,
-    type: "Gelir",
-    date: "2025-05-20",
-  },
-  {
-    id: "6",
-    category: "Yatırım",
-    amount: 15000,
-    type: "Gelir",
-    date: "2025-05-25",
-  },
-  {
-    id: "7",
-    category: "Hediye",
-    amount: 15000,
-    type: "Gelir",
-    date: "2025-05-30",
-  },
-  {
-    id: "8",
-    category: "Maaş",
-    amount: 15000,
-    type: "Gelir",
-    date: "2025-06-01",
-  },
 ];
 
 const DashboardPage = () => {
@@ -132,16 +63,56 @@ const DashboardPage = () => {
     { value: "diger_gelir", label: "Diğer Gelir" },
     { value: "diger_gider", label: "Diğer Gider" },
   ];
+  const { gelirGiderListesi, updateGelirGider, deleteGelirGider } =
+    useContext(IncomeExpenseContext);
 
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [aylikGelirVerisi, setAylikGelirVerisi] = useState([]);
   const [form] = Form.useForm();
-  const toplamGelir = gelirGiderVerisi[0].value;
-  const toplamGider = gelirGiderVerisi[1].value;
-  const kalanBakiye = toplamGelir - toplamGider;
-  const toplam = toplamGelir + toplamGider;
-  const gelirYuzdesi = (toplamGelir / toplam) * 100;
-  const giderYuzdesi = (toplamGider / toplam) * 100;
+  const [toplamGelir, setToplamGelir] = useState(0);
+  const [toplamGider, setToplamGider] = useState(0);
+  const [kalanBakiye, setKalanBakiye] = useState(0);
+  const [gelirYuzdesi, setGelirYuzdesi] = useState(0);
+  const [giderYuzdesi, setGiderYuzdesi] = useState(0);
+
+  useEffect(() => {
+    const gelir = gelirGiderListesi
+      .filter((item) => item.type === "Gelir")
+      .reduce((toplam, item) => toplam + Number(item.amount), 0);
+    const gider = gelirGiderListesi
+      .filter((item) => item.type === "Gider")
+      .reduce((toplam, item) => toplam + Number(item.amount), 0);
+    const bakiye = gelir - gider;
+    const toplam = gelir + gider;
+    const gelirYuzde = toplam > 0 ? (gelir / toplam) * 100 : 0;
+    const giderYuzde = toplam > 0 ? (gider / toplam) * 100 : 0;
+
+    setToplamGelir(gelir);
+    setToplamGider(gider);
+    setKalanBakiye(bakiye);
+    setGelirYuzdesi(gelirYuzde);
+    setGiderYuzdesi(giderYuzde);
+
+    const gruplaAylikGelir = (liste) => {
+      const aylikGelirler = {};
+      liste
+        .filter((item) => item.type === "Gelir")
+        .forEach((item) => {
+          const tarih = new Date(item.date);
+          const ay = tarih.toLocaleString("default", { month: "short" });
+          aylikGelirler[ay] = (aylikGelirler[ay] || 0) + Number(item.amount);
+        });
+
+      return Object.keys(aylikGelirler)
+        .map((ay) => ({ ay, gelir: aylikGelirler[ay] / 1000 }))
+        .sort(
+          (a, b) =>
+            new Date("01-" + a.ay + "-2025") - new Date("01-" + b.ay + "-2025")
+        );
+    };
+    setAylikGelirVerisi(gruplaAylikGelir(gelirGiderListesi));
+  }, [gelirGiderListesi]);
 
   const showModal = (record) => {
     setSelectedRecord(record);
@@ -156,7 +127,7 @@ const DashboardPage = () => {
   };
 
   const handleDelete = () => {
-    console.log("Silmek istediğiniz kayıt:", selectedRecord);
+    deleteGelirGider(selectedRecord.id);
     setIsModalVisible(false);
     setSelectedRecord(null);
     form.resetFields();
@@ -166,7 +137,8 @@ const DashboardPage = () => {
     form
       .validateFields()
       .then((values) => {
-        console.log("Güncellenen değerler:", values);
+        const guncellenmisValues = { ...values, amount: Number(values.amount) };
+        updateGelirGider(selectedRecord.id, values);
         setIsModalVisible(false);
         setSelectedRecord(null);
         form.resetFields();
@@ -178,7 +150,7 @@ const DashboardPage = () => {
 
   const handleSendReport = () => {
     console.log("Rapor gönderiliyor...");
-    console.log("Gelir ve Gider Verisi:", birlesikListeVerisi);
+    console.log("Gelir ve Gider Verisi:", gelirGiderListesi);
 
     alert("Gelir ve Gider bilgileriniz e-posta adresinize gönderilmiştir.");
   };
@@ -352,7 +324,10 @@ const DashboardPage = () => {
             <ResponsiveContainer height={250}>
               <PieChart>
                 <Pie
-                  data={gelirGiderVerisi}
+                  data={[
+                    { name: "Gelir", value: toplamGelir, type: "Gelir" },
+                    { name: "Gider", value: toplamGider, type: "Gider" },
+                  ]}
                   cx="50%"
                   cy="50%"
                   outerRadius={80}
@@ -361,12 +336,8 @@ const DashboardPage = () => {
                   nameKey="name"
                   label
                 >
-                  {gelirGiderVerisi.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
+                  <Cell key={`cell-0`} fill={COLORS[0]} />
+                  <Cell key={`cell-1`} fill={COLORS[1]} />
                 </Pie>
                 <Tooltip formatter={(value) => `${value} TL`} />
               </PieChart>
@@ -386,7 +357,7 @@ const DashboardPage = () => {
         <Col xs={24} sm={24} md={24} lg={16}>
           <Card title="Aylık Gelir Analizi">
             <ResponsiveContainer height={250}>
-              <BarChart data={gelirZamanCizelgesiVerisi}>
+              <BarChart data={aylikGelirVerisi}>
                 <XAxis dataKey="ay" />
                 <YAxis />
                 <Tooltip formatter={(value) => `${value * 1000} TL`} />
@@ -420,7 +391,7 @@ const DashboardPage = () => {
             }
           >
             <Table
-              dataSource={birlesikListeVerisi}
+              dataSource={gelirGiderListesi}
               columns={sutunlar.map((col) => ({
                 ...col,
                 onCell: (record) => ({

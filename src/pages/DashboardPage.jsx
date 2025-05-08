@@ -37,16 +37,10 @@ import {
 } from "recharts";
 import { IncomeExpenseContext } from "../context/IncomeExpenseContext";
 
-const { Title } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
 
 const COLORS = ["#3f8600", "#cf1322"];
-
-const gelirGiderVerisi = [
-  { name: "Gelir", value: 50000, type: "Gelir" },
-  { name: "Gider", value: 20000, type: "Gider" },
-];
 
 const DashboardPage = () => {
   const kategoriSecenekleri = [
@@ -68,7 +62,7 @@ const DashboardPage = () => {
 
   const [selectedRecord, setSelectedRecord] = useState(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [aylikGelirVerisi, setAylikGelirVerisi] = useState([]);
+  const [aylikGelirGiderVerisi, setAylikGelirGiderVerisi] = useState([]);
   const [form] = Form.useForm();
   const [toplamGelir, setToplamGelir] = useState(0);
   const [toplamGider, setToplamGider] = useState(0);
@@ -94,24 +88,34 @@ const DashboardPage = () => {
     setGelirYuzdesi(gelirYuzde);
     setGiderYuzdesi(giderYuzde);
 
-    const gruplaAylikGelir = (liste) => {
-      const aylikGelirler = {};
-      liste
-        .filter((item) => item.type === "Gelir")
-        .forEach((item) => {
-          const tarih = new Date(item.date);
-          const ay = tarih.toLocaleString("default", { month: "short" });
-          aylikGelirler[ay] = (aylikGelirler[ay] || 0) + Number(item.amount);
-        });
+    const gruplaAylikGelirGider = (liste) => {
+      const aylikVeri = {};
+      liste.forEach((item) => {
+        const tarih = new Date(item.date);
+        const ay = tarih.toLocaleString("default", { month: "short" });
+        if (!aylikVeri[ay]) {
+          aylikVeri[ay] = { ay, gelir: 0, gider: 0 };
+        }
+        if (item.type === "Gelir") {
+          aylikVeri[ay].gelir += Number(item.amount);
+        } else if (item.type === "Gider") {
+          aylikVeri[ay].gider += Number(item.amount);
+        }
+      });
 
-      return Object.keys(aylikGelirler)
-        .map((ay) => ({ ay, gelir: aylikGelirler[ay] / 1000 }))
-        .sort(
-          (a, b) =>
-            new Date("01-" + a.ay + "-2025") - new Date("01-" + b.ay + "-2025")
-        );
+      return Object.values(aylikVeri).sort(
+        (a, b) =>
+          new Date("01-" + a.ay + "-2025") - new Date("01-" + b.ay + "-2025")
+      );
     };
-    setAylikGelirVerisi(gruplaAylikGelir(gelirGiderListesi));
+    const yeniAylikGelirGiderVerisi = gruplaAylikGelirGider(gelirGiderListesi);
+    setAylikGelirGiderVerisi(
+      yeniAylikGelirGiderVerisi.map((item) => ({
+        ...item,
+        gelir: item.gelir / 1000,
+        gider: item.gider / 1000,
+      }))
+    );
   }, [gelirGiderListesi]);
 
   const showModal = (record) => {
@@ -137,7 +141,6 @@ const DashboardPage = () => {
     form
       .validateFields()
       .then((values) => {
-        const guncellenmisValues = { ...values, amount: Number(values.amount) };
         updateGelirGider(selectedRecord.id, values);
         setIsModalVisible(false);
         setSelectedRecord(null);
@@ -355,13 +358,14 @@ const DashboardPage = () => {
           </Card>
         </Col>
         <Col xs={24} sm={24} md={24} lg={16}>
-          <Card title="Aylık Gelir Analizi">
+          <Card title="Aylık Gelir / Gider Analizi">
             <ResponsiveContainer height={250}>
-              <BarChart data={aylikGelirVerisi}>
+              <BarChart data={aylikGelirGiderVerisi}>
                 <XAxis dataKey="ay" />
                 <YAxis />
                 <Tooltip formatter={(value) => `${value * 1000} TL`} />
                 <Bar dataKey="gelir" fill={COLORS[0]} name="Gelir" />
+                <Bar dataKey="gider" fill={COLORS[1]} name="Gider" />
               </BarChart>
             </ResponsiveContainer>
           </Card>

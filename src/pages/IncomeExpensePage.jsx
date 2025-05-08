@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   Card,
   Form,
@@ -17,52 +17,26 @@ import {
   Popover,
 } from "antd";
 import { ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
+import { IncomeExpenseContext } from "../context/IncomeExpenseContext";
 
 const { Option } = Select;
-const maxLatestTransactions = 5;
 
 const IncomeExpensePage = () => {
   const [form] = Form.useForm();
+  const { addGelirGider, gelirGiderListesi } = useContext(IncomeExpenseContext);
   const [type, setType] = useState("gelir");
   const [activePopoverId, setActivePopoverId] = useState(null);
-  const [balance, setBalance] = useState(1500);
-  const [latestTransactions, setLatestTransactions] = useState([
-    {
-      id: 1,
-      type: "gelir",
-      amount: 500,
-      category: "Maaş",
-      date: new Date(Date.now() - 86400000),
-      description: "Mayıs ayı maaşı",
-    },
-    {
-      id: 2,
-      type: "gider",
-      amount: 120,
-      category: "Market",
-      date: new Date(),
-      description: "Haftalık market alışverişi",
-    },
-  ]);
 
   const onFinish = (values) => {
-    console.log("Başarılı:", values);
-    const newTransaction = {
+    const yeniKayit = {
       ...values,
-      type,
-      date: values.date.toDate(),
-      id: Date.now(),
+      amount: Number(values.amount),
+      date: values.date.format("YYYY-MM-DD"),
+      type: type === "gelir" ? "Gelir" : "Gider",
     };
-    setLatestTransactions([
-      newTransaction,
-      ...latestTransactions.slice(0, maxLatestTransactions - 1),
-    ]);
-    if (type === "gelir") {
-      setBalance(balance + values.amount);
-    } else {
-      setBalance(balance - values.amount);
-    }
+    addGelirGider(yeniKayit);
     form.resetFields();
+    setType("");
   };
 
   const handleTypeChange = (value) => {
@@ -165,18 +139,10 @@ const IncomeExpensePage = () => {
           </Card>
         </Col>
         <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-          <Card title="Anlık Bakiye" bordered={false}>
-            <Statistic
-              title="Toplam Bakiye"
-              value={`${balance} TL`}
-              precision={2}
-              valueStyle={{ color: balance >= 0 ? "#3f8600" : "#cf1322" }}
-            />
-          </Card>
           <Card title="Son İşlemler" bordered={false} style={{ marginTop: 24 }}>
             <List
               itemLayout="horizontal"
-              dataSource={latestTransactions}
+              dataSource={gelirGiderListesi.slice().reverse().slice(0, 5)}
               renderItem={(item) => (
                 <Popover
                   key={item.id}
@@ -193,7 +159,7 @@ const IncomeExpensePage = () => {
                       avatar={
                         <Avatar
                           icon={
-                            item.type === "gelir" ? (
+                            item.type === "Gelir" ? (
                               <ArrowUpOutlined style={{ color: "#3f8600" }} />
                             ) : (
                               <ArrowDownOutlined style={{ color: "#cf1322" }} />
@@ -204,7 +170,7 @@ const IncomeExpensePage = () => {
                       title={`${item.category} (${new Date(
                         item.date
                       ).toLocaleDateString()})`}
-                      description={`${item.type === "gelir" ? "+" : "-"}${
+                      description={`${item.type === "Gelir" ? "+" : "-"}${
                         item.amount
                       } TL`}
                     />

@@ -1,5 +1,4 @@
-import React from "react";
-import { Layout, Menu } from "antd";
+import { Layout, Button } from "antd";
 import { LoginOutlined, UserAddOutlined } from "@ant-design/icons";
 import "./HomePage.css";
 import { Link } from "react-router-dom";
@@ -13,19 +12,17 @@ const HomePage = () => {
     <Layout className="layout">
       <Header className="header">
         <h1 className="header-title">Bütçe Yönetici</h1>
-        <Menu
-          mode="horizontal"
-          theme="light"
-          style={{ backgroundColor: "transparent", borderBottom: "none" }}
-        >
+
+        <div className="header-title">
           <Link to="/login">
-            <Menu.Item icon={<LoginOutlined />}>Giriş Yap</Menu.Item>
+            <Button icon={<LoginOutlined />}>Giriş Yap</Button>
           </Link>
           <Link to="/register">
-            <Menu.Item icon={<UserAddOutlined />}>Kayıt Ol</Menu.Item>
+            <Button icon={<UserAddOutlined />}>Kayıt Ol</Button>
           </Link>
-        </Menu>
+        </div>
       </Header>
+
       <Content className="content">
         <div className="content-inner">
           <div className="hero-section">
@@ -71,6 +68,7 @@ const HomePage = () => {
           </div>
         </div>
       </Content>
+
       <Footer className="footer">
         © {currentYear} Bütçe Yönetici | Tüm Hakları Saklıdır.
       </Footer>

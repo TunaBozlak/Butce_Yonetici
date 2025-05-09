@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { Calendar, Badge, Modal, List } from "antd";
 import { IncomeExpenseContext } from "../context/IncomeExpenseContext";
 
 const CalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [dailyTransactions, setDailyTransactions] = useState([]);
-  const { gelirGiderListesi } = useContext(IncomeExpenseContext);
+  const [open, setOpen] = useState(false);
+  const [dailyIncomeExpense, setDailyIncomeExpense] = useState([]);
+  const { incomeExpenseList } = useContext(IncomeExpenseContext);
 
   const formatDate = (date) => {
     const year = date.getFullYear();
@@ -17,7 +17,7 @@ const CalendarPage = () => {
 
   const getListData = (value) => {
     const formattedValue = formatDate(value.toDate());
-    return gelirGiderListesi.filter(
+    return incomeExpenseList.filter(
       (item) => formatDate(new Date(item.date)) === formattedValue
     );
   };
@@ -38,24 +38,24 @@ const CalendarPage = () => {
     );
   };
 
-  const onSelect = (value) => {
-    const selectedDateJS = value.toDate();
-    setSelectedDate(selectedDateJS);
-    const formattedValue = formatDate(selectedDateJS);
-    const dailyData = gelirGiderListesi.filter(
+  const openModal = (value) => {
+    const selectedDates = value.toDate();
+    setSelectedDate(selectedDates);
+    const formattedValue = formatDate(selectedDates);
+    const dailyData = incomeExpenseList.filter(
       (item) => formatDate(new Date(item.date)) === formattedValue
     );
-    setDailyTransactions(dailyData);
-    setIsModalOpen(true);
+    setDailyIncomeExpense(dailyData);
+    setOpen(true);
   };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
+  const closeModal = () => {
+    setOpen(false);
   };
 
   return (
     <div>
-      <Calendar dateCellRender={dateCellRender} onSelect={onSelect} />
+      <Calendar dateCellRender={dateCellRender} onSelect={openModal} />
 
       <Modal
         title={
@@ -65,12 +65,12 @@ const CalendarPage = () => {
               ).padStart(2, "0")}.${selectedDate.getFullYear()} İşlemleri`
             : ""
         }
-        open={isModalOpen}
-        onCancel={handleCancel}
         footer={null}
+        open={open}
+        onCancel={closeModal}
       >
         <List
-          dataSource={dailyTransactions}
+          dataSource={dailyIncomeExpense}
           renderItem={(item) => (
             <List.Item>
               <span style={{ color: item.type === "Gelir" ? "green" : "red" }}>

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import { useContext, useState } from "react";
 import {
   Card,
   Form,
@@ -9,7 +9,6 @@ import {
   DatePicker,
   Button,
   Space,
-  Statistic,
   List,
   Avatar,
   Row,
@@ -23,18 +22,18 @@ const { Option } = Select;
 
 const IncomeExpensePage = () => {
   const [form] = Form.useForm();
-  const { addGelirGider, gelirGiderListesi } = useContext(IncomeExpenseContext);
+  const { addIncomeExpense, incomeExpenseList } =
+    useContext(IncomeExpenseContext);
   const [type, setType] = useState("gelir");
-  const [activePopoverId, setActivePopoverId] = useState(null);
 
-  const onFinish = (values) => {
-    const yeniKayit = {
+  const handleAdd = (values) => {
+    const newRecord = {
       ...values,
       amount: Number(values.amount),
       date: values.date.format("YYYY-MM-DD"),
       type: type === "gelir" ? "Gelir" : "Gider",
     };
-    addGelirGider(yeniKayit);
+    addIncomeExpense(newRecord);
     form.resetFields();
     setType("");
   };
@@ -43,23 +42,18 @@ const IncomeExpensePage = () => {
     setType(value);
   };
 
-  const handlePopoverVisibleChange = (visible, itemId) => {
-    setActivePopoverId(visible ? itemId : null);
-  };
-
   return (
     <div style={{ padding: 24 }}>
-      <Row gutter={24}>
-        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-          <Card title="Yeni Gelir / Gider Ekle" bordered={false}>
-            <Form form={form} layout="vertical" onFinish={onFinish}>
+      <Row gutter={36}>
+        <Col lg={12}>
+          <Card title="Yeni Gelir / Gider Ekle">
+            <Form form={form} layout="vertical" onFinish={handleAdd}>
               <Form.Item label="İşlem Tipi">
                 <Segmented
                   options={[
                     { label: "Gelir", value: "gelir" },
                     { label: "Gider", value: "gider" },
                   ]}
-                  value={type}
                   onChange={handleTypeChange}
                 />
               </Form.Item>
@@ -138,21 +132,17 @@ const IncomeExpensePage = () => {
             </Form>
           </Card>
         </Col>
-        <Col xs={24} sm={24} md={12} lg={12} xl={12}>
-          <Card title="Son İşlemler" bordered={false} style={{ marginTop: 24 }}>
+        <Col lg={12}>
+          <Card title="Son İşlemler">
             <List
               itemLayout="horizontal"
-              dataSource={gelirGiderListesi.slice().reverse().slice(0, 5)}
+              dataSource={incomeExpenseList.slice().reverse().slice(0, 5)}
               renderItem={(item) => (
                 <Popover
                   key={item.id}
                   content={item.description}
                   title={item.description ? "Açıklama" : null}
                   trigger="click"
-                  visible={activePopoverId === item.id}
-                  onVisibleChange={(visible) =>
-                    handlePopoverVisibleChange(visible, item.id)
-                  }
                 >
                   <List.Item style={{ cursor: "pointer" }}>
                     <List.Item.Meta

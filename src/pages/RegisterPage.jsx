@@ -1,57 +1,40 @@
-import React from "react";
 import { Button, Form, Input } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
+
+  const handleRegister = () => {
+    navigate("/main");
+  };
+
   return (
     <div className="register-page-container">
       <Form
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        initialValues={{ remember: true }}
+        labelCol={{ span: 5 }}
         autoComplete="off"
         className="register-form"
+        onFinish={handleRegister}
       >
-        <Form.Item
-          label="Ad"
-          rules={[
-            { required: true, message: "Lütfen adınızı giriniz!" },
-            {
-              type: "email",
-              message: "Lütfen geçerli bir e-posta adresi girin!",
-            },
-          ]}
-        >
-          <Input />
+        <Form.Item label="Ad">
+          <Input required />
         </Form.Item>
 
-        <Form.Item
-          label="Soyad"
-          rules={[{ required: true, message: "Lütfen soyadınızı giriniz!" }]}
-        >
-          <Input />
+        <Form.Item label="Soyad">
+          <Input required />
         </Form.Item>
 
-        <Form.Item
-          label="E-posta"
-          rules={[
-            { required: true, message: "Lütfen mail adresinizi giriniz!" },
-            { type: "email", message: "Geçerli bir e-posta adresi giriniz!" },
-          ]}
-        >
-          <Input />
+        <Form.Item label="E-posta">
+          <Input required />
         </Form.Item>
 
-        <Form.Item
-          label="Şifre"
-          rules={[{ required: true, message: "Lütfen şifrenizi giriniz!" }]}
-        >
-          <Input.Password />
+        <Form.Item label="Şifre">
+          <Input.Password required />
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button type="primary" block htmlType="submit">
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
             Kayıt Ol
           </Button>
         </Form.Item>

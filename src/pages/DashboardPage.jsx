@@ -1,11 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   Row,
   Col,
   Card,
   Statistic,
   Space,
-  Typography,
   Input,
   Table,
   Button,
@@ -23,7 +22,6 @@ import {
   MailOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
-import "antd/dist/reset.css";
 import {
   ResponsiveContainer,
   PieChart,
@@ -43,7 +41,7 @@ const { Option } = Select;
 const COLORS = ["#3f8600", "#cf1322"];
 
 const DashboardPage = () => {
-  const kategoriSecenekleri = [
+  const categoriesSelect = [
     { value: "maas", label: "Maaş" },
     { value: "kira", label: "Kira" },
     { value: "market", label: "Market" },
@@ -57,82 +55,85 @@ const DashboardPage = () => {
     { value: "diger_gelir", label: "Diğer Gelir" },
     { value: "diger_gider", label: "Diğer Gider" },
   ];
-  const { gelirGiderListesi, updateGelirGider, deleteGelirGider } =
+  const { incomeExpenseList, updateIncomeExpense, deleteIncomeExpense } =
     useContext(IncomeExpenseContext);
 
   const [selectedRecord, setSelectedRecord] = useState(null);
-  const [isModalVisible, setIsModalVisible] = useState(false);
-  const [aylikGelirGiderVerisi, setAylikGelirGiderVerisi] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [monthlyIncomeExpenseData, setMonthlyIncomeExpenseData] = useState([]);
   const [form] = Form.useForm();
-  const [toplamGelir, setToplamGelir] = useState(0);
-  const [toplamGider, setToplamGider] = useState(0);
-  const [kalanBakiye, setKalanBakiye] = useState(0);
-  const [gelirYuzdesi, setGelirYuzdesi] = useState(0);
-  const [giderYuzdesi, setGiderYuzdesi] = useState(0);
+  const [totalIncome, setTotalIncome] = useState(0);
+  const [totalExpense, setTotalExpense] = useState(0);
+  const [remainingBalance, setRemainigBalance] = useState(0);
+  const [incomePercent, setIncomePercent] = useState(0);
+  const [expensePercent, setExpensePercent] = useState(0);
 
   useEffect(() => {
-    const gelir = gelirGiderListesi
+    const income = incomeExpenseList
       .filter((item) => item.type === "Gelir")
-      .reduce((toplam, item) => toplam + Number(item.amount), 0);
-    const gider = gelirGiderListesi
+      .reduce((total, item) => total + Number(item.amount), 0);
+    const expense = incomeExpenseList
       .filter((item) => item.type === "Gider")
-      .reduce((toplam, item) => toplam + Number(item.amount), 0);
-    const bakiye = gelir - gider;
-    const toplam = gelir + gider;
-    const gelirYuzde = toplam > 0 ? (gelir / toplam) * 100 : 0;
-    const giderYuzde = toplam > 0 ? (gider / toplam) * 100 : 0;
+      .reduce((total, item) => total + Number(item.amount), 0);
+    const balance = income - expense;
+    const total = income + expense;
+    const incomePercent = total > 0 ? (income / total) * 100 : 0;
+    const expensePercent = total > 0 ? (expense / total) * 100 : 0;
 
-    setToplamGelir(gelir);
-    setToplamGider(gider);
-    setKalanBakiye(bakiye);
-    setGelirYuzdesi(gelirYuzde);
-    setGiderYuzdesi(giderYuzde);
+    setTotalIncome(income);
+    setTotalExpense(expense);
+    setRemainigBalance(balance);
+    setIncomePercent(incomePercent);
+    setExpensePercent(expensePercent);
 
-    const gruplaAylikGelirGider = (liste) => {
-      const aylikVeri = {};
-      liste.forEach((item) => {
-        const tarih = new Date(item.date);
-        const ay = tarih.toLocaleString("default", { month: "short" });
-        if (!aylikVeri[ay]) {
-          aylikVeri[ay] = { ay, gelir: 0, gider: 0 };
+    const groupMonthlyIncomeExpense = (list) => {
+      const monthlyData = {};
+      list.forEach((item) => {
+        const date = new Date(item.date);
+        const month = date.toLocaleString("default", { month: "short" });
+        if (!monthlyData[month]) {
+          monthlyData[month] = { month, income: 0, expense: 0 };
         }
         if (item.type === "Gelir") {
-          aylikVeri[ay].gelir += Number(item.amount);
+          monthlyData[month].income += Number(item.amount);
         } else if (item.type === "Gider") {
-          aylikVeri[ay].gider += Number(item.amount);
+          monthlyData[month].expense += Number(item.amount);
         }
       });
 
-      return Object.values(aylikVeri).sort(
+      return Object.values(monthlyData).sort(
         (a, b) =>
-          new Date("01-" + a.ay + "-2025") - new Date("01-" + b.ay + "-2025")
+          new Date("01-" + a.month + "-2025") -
+          new Date("01-" + b.month + "-2025")
       );
     };
-    const yeniAylikGelirGiderVerisi = gruplaAylikGelirGider(gelirGiderListesi);
-    setAylikGelirGiderVerisi(
-      yeniAylikGelirGiderVerisi.map((item) => ({
+
+    const newMonthlyIncomeExpenseData =
+      groupMonthlyIncomeExpense(incomeExpenseList);
+    setMonthlyIncomeExpenseData(
+      newMonthlyIncomeExpenseData.map((item) => ({
         ...item,
-        gelir: item.gelir / 1000,
-        gider: item.gider / 1000,
+        income: item.income / 1000,
+        expense: item.expense / 1000,
       }))
     );
-  }, [gelirGiderListesi]);
+  }, [incomeExpenseList]);
 
-  const showModal = (record) => {
+  const openModal = (record) => {
     setSelectedRecord(record);
-    setIsModalVisible(true);
+    setOpen(true);
     form.setFieldsValue(record);
   };
 
-  const handleCancel = () => {
-    setIsModalVisible(false);
+  const closeModal = () => {
+    setOpen(false);
     setSelectedRecord(null);
     form.resetFields();
   };
 
   const handleDelete = () => {
-    deleteGelirGider(selectedRecord.id);
-    setIsModalVisible(false);
+    deleteIncomeExpense(selectedRecord.id);
+    setOpen(false);
     setSelectedRecord(null);
     form.resetFields();
   };
@@ -141,8 +142,8 @@ const DashboardPage = () => {
     form
       .validateFields()
       .then((values) => {
-        updateGelirGider(selectedRecord.id, values);
-        setIsModalVisible(false);
+        updateIncomeExpense(selectedRecord.id, values);
+        setOpen(false);
         setSelectedRecord(null);
         form.resetFields();
       })
@@ -153,12 +154,12 @@ const DashboardPage = () => {
 
   const handleSendReport = () => {
     console.log("Rapor gönderiliyor...");
-    console.log("Gelir ve Gider Verisi:", gelirGiderListesi);
+    console.log("Gelir ve Gider Verisi:", incomeExpenseList);
 
     alert("Gelir ve Gider bilgileriniz e-posta adresinize gönderilmiştir.");
   };
 
-  const sutunlar = [
+  const columns = [
     {
       title: "Kategori",
       dataIndex: "category",
@@ -286,35 +287,39 @@ const DashboardPage = () => {
   return (
     <div style={{ padding: 24 }}>
       <Row gutter={24}>
-        <Col xs={24} sm={12} md={8}>
+        <Col md={8}>
           <Card>
             <Statistic
               title="Toplam Gelir"
-              value={`${toplamGelir} TL`}
+              value={`${totalIncome} TL`}
               precision={2}
               valueStyle={{ color: "#3f8600" }}
               prefix={<MoneyCollectOutlined />}
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} md={8}>
+
+        <Col md={8}>
           <Card>
             <Statistic
               title="Toplam Gider"
-              value={`${toplamGider} TL`}
+              value={`${totalExpense} TL`}
               precision={2}
               valueStyle={{ color: "#cf1322" }}
               prefix={<ShoppingCartOutlined />}
             />
           </Card>
         </Col>
-        <Col xs={24} sm={12} md={8}>
+
+        <Col md={8}>
           <Card>
             <Statistic
               title="Kalan Bütçe"
-              value={`${kalanBakiye} TL`}
+              value={`${remainingBalance} TL`}
               precision={2}
-              valueStyle={{ color: kalanBakiye >= 0 ? "#3f8600" : "#cf1322" }}
+              valueStyle={{
+                color: remainingBalance >= 0 ? "#3f8600" : "#cf1322",
+              }}
               prefix={<WalletOutlined />}
             />
           </Card>
@@ -322,14 +327,14 @@ const DashboardPage = () => {
       </Row>
 
       <Row gutter={24} style={{ marginTop: 24 }}>
-        <Col xs={24} sm={12} md={12} lg={8}>
+        <Col lg={8}>
           <Card title="Gelir / Gider Analizi">
             <ResponsiveContainer height={250}>
               <PieChart>
                 <Pie
                   data={[
-                    { name: "Gelir", value: toplamGelir, type: "Gelir" },
-                    { name: "Gider", value: toplamGider, type: "Gider" },
+                    { name: "Gelir", value: totalIncome, type: "Gelir" },
+                    { name: "Gider", value: totalExpense, type: "Gider" },
                   ]}
                   cx="50%"
                   cy="50%"
@@ -347,25 +352,26 @@ const DashboardPage = () => {
               <div style={{ textAlign: "center", marginTop: 16 }}>
                 <Space>
                   <span style={{ color: COLORS[0] }}>
-                    <ArrowUpOutlined /> Gelir (%{gelirYuzdesi.toFixed(0)})
+                    <ArrowUpOutlined /> Gelir (%{incomePercent.toFixed(0)})
                   </span>
                   <span style={{ color: COLORS[1] }}>
-                    <ArrowDownOutlined /> Gider (%{giderYuzdesi.toFixed(0)})
+                    <ArrowDownOutlined /> Gider (%{expensePercent.toFixed(0)})
                   </span>
                 </Space>
               </div>
             </ResponsiveContainer>
           </Card>
         </Col>
-        <Col xs={24} sm={24} md={24} lg={16}>
+
+        <Col lg={16}>
           <Card title="Aylık Gelir / Gider Analizi">
             <ResponsiveContainer height={250}>
-              <BarChart data={aylikGelirGiderVerisi}>
-                <XAxis dataKey="ay" />
+              <BarChart data={monthlyIncomeExpenseData}>
+                <XAxis dataKey="month" />
                 <YAxis />
                 <Tooltip formatter={(value) => `${value * 1000} TL`} />
-                <Bar dataKey="gelir" fill={COLORS[0]} name="Gelir" />
-                <Bar dataKey="gider" fill={COLORS[1]} name="Gider" />
+                <Bar dataKey="income" fill={COLORS[0]} name="Gelir" />
+                <Bar dataKey="expense" fill={COLORS[1]} name="Gider" />
               </BarChart>
             </ResponsiveContainer>
           </Card>
@@ -395,12 +401,12 @@ const DashboardPage = () => {
             }
           >
             <Table
-              dataSource={gelirGiderListesi}
-              columns={sutunlar.map((col) => ({
+              dataSource={incomeExpenseList}
+              columns={columns.map((col) => ({
                 ...col,
                 onCell: (record) => ({
                   onClick: () => {
-                    showModal(record);
+                    openModal(record);
                   },
                 }),
                 style: { cursor: "pointer" },
@@ -413,8 +419,8 @@ const DashboardPage = () => {
 
       <Modal
         title={selectedRecord ? `${selectedRecord.type} Detayı` : "Detay"}
-        visible={isModalVisible}
-        onCancel={handleCancel}
+        visible={open}
+        onCancel={closeModal}
         footer={[
           <Button key="sil" danger onClick={handleDelete}>
             Sil
@@ -422,7 +428,7 @@ const DashboardPage = () => {
           <Button key="guncelle" type="primary" onClick={handleUpdate}>
             Güncelle
           </Button>,
-          <Button key="iptal" onClick={handleCancel}>
+          <Button key="iptal" onClick={closeModal}>
             İptal
           </Button>,
         ]}
@@ -431,9 +437,9 @@ const DashboardPage = () => {
           <Form form={form} layout="vertical" initialValues={selectedRecord}>
             <Form.Item label="Kategori" name="category">
               <Select placeholder="Kategori Seçin">
-                {kategoriSecenekleri.map((secenek) => (
-                  <Option key={secenek.value} value={secenek.value}>
-                    {secenek.label}
+                {categoriesSelect.map((select) => (
+                  <Option key={select.value} value={select.value}>
+                    {select.label}
                   </Option>
                 ))}
               </Select>
@@ -442,9 +448,11 @@ const DashboardPage = () => {
             <Form.Item label="Tutar" name="amount">
               <Input type="number" />
             </Form.Item>
+
             <Form.Item label="Tip" name="type">
               <Input disabled />
             </Form.Item>
+
             {selectedRecord.description && (
               <Form.Item label="Açıklama" name="description">
                 <TextArea rows={4} />

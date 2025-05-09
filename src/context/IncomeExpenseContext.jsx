@@ -1,9 +1,9 @@
-import React, { createContext, useState } from "react";
+import { createContext, useState } from "react";
 
 export const IncomeExpenseContext = createContext();
 
 export const IncomeExpenseProvider = ({ children }) => {
-  const [gelirGiderListesi, setGelirGiderListesi] = useState([
+  const [incomeExpenseList, setIncomeExpenseList] = useState([
     {
       id: "1",
       category: "Kira",
@@ -63,32 +63,34 @@ export const IncomeExpenseProvider = ({ children }) => {
     },
   ]);
 
-  const addGelirGider = (yeniKayit) => {
-    setGelirGiderListesi([
-      ...gelirGiderListesi,
-      { ...yeniKayit, id: Date.now().toString() },
+  const addIncomeExpense = (newRecord) => {
+    setIncomeExpenseList([
+      ...incomeExpenseList,
+      { ...newRecord, id: Date.now().toString() },
     ]);
   };
 
-  const updateGelirGider = (id, guncellenmisKayit) => {
-    setGelirGiderListesi(
-      gelirGiderListesi.map((kayit) =>
-        kayit.id === id ? { ...kayit, ...guncellenmisKayit } : kayit
+  const updateIncomeExpense = (id, updatedRecord) => {
+    setIncomeExpenseList(
+      incomeExpenseList.map((record) =>
+        record.id === id ? { ...record, ...updatedRecord } : record
       )
     );
   };
 
-  const deleteGelirGider = (id) => {
-    setGelirGiderListesi(gelirGiderListesi.filter((kayit) => kayit.id !== id));
+  const deleteIncomeExpense = (id) => {
+    setIncomeExpenseList(
+      incomeExpenseList.filter((record) => record.id !== id)
+    );
   };
 
   return (
     <IncomeExpenseContext.Provider
       value={{
-        gelirGiderListesi,
-        addGelirGider,
-        updateGelirGider,
-        deleteGelirGider,
+        incomeExpenseList,
+        addIncomeExpense,
+        updateIncomeExpense,
+        deleteIncomeExpense,
       }}
     >
       {children}

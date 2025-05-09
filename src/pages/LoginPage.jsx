@@ -1,35 +1,34 @@
-import React from "react";
 import { Button, Form, Input } from "antd";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 
 const LoginPage = () => {
+  const navigate = useNavigate();
+  const handleLogin = () => {
+    navigate("/main");
+  };
   return (
     <div className="login-page-container">
       <Form
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        initialValues={{ remember: true }}
+        labelCol={{ span: 5 }}
         autoComplete="off"
         className="login-form"
+        onFinish={handleLogin}
       >
-        <Form.Item
-          label="E-posta"
-          rules={[{ required: true, message: "Lütfen mail adresini giriniz!" }]}
-        >
-          <Input />
+        <Form.Item label="E-posta">
+          <Input required />
         </Form.Item>
 
-        <Form.Item
-          label="Şifre"
-          rules={[{ required: true, message: "Lütfen şifrenizi giriniz!" }]}
-        >
-          <Input.Password />
+        <Form.Item label="Şifre">
+          <Input.Password required />
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button type="primary"> Giriş Yap</Button>
+        <Form.Item>
+          <Button type="primary" htmlType="login">
+            Giriş Yap
+          </Button>
         </Form.Item>
+
         <div className="form-footer-links">
           Hesabın Yok Mu?
           <Link to="/register">

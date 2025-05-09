@@ -1,8 +1,7 @@
-import React, { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Layout,
   Menu,
-  theme,
   Dropdown,
   Avatar,
   Modal,
@@ -20,9 +19,10 @@ import {
 } from "@ant-design/icons";
 import DashboardPage from "./DashboardPage";
 import IncomeExpensePage from "./IncomeExpensePage";
+import CalendarPage from "./CalendarPage";
+
 import "./MainPage.css";
 
-import CalendarPage from "./CalendarPage";
 const { TextArea } = Input;
 const { Option } = Select;
 
@@ -55,10 +55,6 @@ const jobOptions = [
 ];
 
 const MainPage = () => {
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
-
   const [selectedKey, setSelectedKey] = useState("1");
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -68,8 +64,8 @@ const MainPage = () => {
   const [open, setOpen] = useState(false);
   const currentYear = new Date().getFullYear();
 
-  const renderContent = useMemo(() => {
-    switch (selectedKey) {
+  const renderContent = (key) => {
+    switch (key) {
       case "1":
         return { title: "Finansal Durum Panosu", component: <DashboardPage /> };
       case "2":
@@ -82,8 +78,8 @@ const MainPage = () => {
       default:
         return { title: "Finansal Durum Panosu", component: <DashboardPage /> };
     }
-  }, [selectedKey]);
-  const { title, component } = renderContent;
+  };
+  const { title, component } = renderContent(selectedKey);
 
   const openModal = () => {
     setOpen(true);
@@ -93,8 +89,8 @@ const MainPage = () => {
     setOpen(false);
   };
 
-  const handleMenuClick = (menuKey) => {
-    setSelectedKey(menuKey);
+  const handleMenuClick = (key) => {
+    setSelectedKey(key);
   };
 
   const handleSaveSettings = () => {
@@ -118,9 +114,8 @@ const MainPage = () => {
         <div className="sider-header">Bütçe Yönetici</div>
         <Menu
           theme="dark"
-          mode="inline"
           onClick={(e) => handleMenuClick(e.key)}
-          selectedKeys={[selectedKey]}
+          selectedKeys={selectedKey}
           items={menuItems}
           className="sider-menu"
         />

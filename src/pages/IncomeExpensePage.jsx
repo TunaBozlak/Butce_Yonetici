@@ -19,6 +19,20 @@ import { ArrowUpOutlined, ArrowDownOutlined } from "@ant-design/icons";
 import { IncomeExpenseContext } from "../context/IncomeExpenseContext";
 
 const { Option } = Select;
+const categoriesSelect = [
+  { value: "Maaş", label: "Maaş" },
+  { value: "Kira", label: "Kira" },
+  { value: "Market", label: "Market" },
+  { value: "Fatura", label: "Fatura" },
+  { value: "Eğitim", label: "Eğitim" },
+  { value: "Sağlık", label: "Sağlık" },
+  { value: "Ulaşım", label: "Ulaşım" },
+  { value: "Eğlence", label: "Eğlence" },
+  { value: "Yatırım", label: "Yatırım" },
+  { value: "Hediye", label: "Hediye" },
+  { value: "Diğer Gelir", label: "Diğer Gelir" },
+  { value: "Diğer Gider", label: "Diğer Gider" },
+];
 
 const IncomeExpensePage = () => {
   const [form] = Form.useForm();
@@ -26,20 +40,20 @@ const IncomeExpensePage = () => {
     useContext(IncomeExpenseContext);
   const [type, setType] = useState("gelir");
 
-  const handleAdd = (values) => {
-    const newRecord = {
-      ...values,
-      amount: Number(values.amount),
-      date: values.date.format("YYYY-MM-DD"),
+  const handleAdd = (items) => {
+    const newItem = {
+      ...items,
+      amount: Number(items.amount),
+      date: items.date.format("YYYY-MM-DD"),
       type: type === "gelir" ? "Gelir" : "Gider",
     };
-    addIncomeExpense(newRecord);
+    addIncomeExpense(newItem);
     form.resetFields();
     setType("");
   };
 
-  const handleTypeChange = (value) => {
-    setType(value);
+  const handleTypeChange = (item) => {
+    setType(item);
   };
 
   return (
@@ -81,28 +95,12 @@ const IncomeExpensePage = () => {
                     { required: true, message: "Lütfen bir kategori seçiniz!" },
                   ]}
                 >
-                  <Select
-                    placeholder="Kategori seçiniz"
-                    showSearch
-                    filterOption={(input, option) =>
-                      option.children
-                        .toLowerCase()
-                        .indexOf(input.toLowerCase()) >= 0
-                    }
-                    style={{ width: "200px" }}
-                  >
-                    <Option value="maas">Maaş</Option>
-                    <Option value="kira">Kira</Option>
-                    <Option value="market">Market</Option>
-                    <Option value="fatura">Fatura</Option>
-                    <Option value="egitim">Eğitim</Option>
-                    <Option value="saglik">Sağlık</Option>
-                    <Option value="ulasim">Ulaşım</Option>
-                    <Option value="eglence">Eglence</Option>
-                    <Option value="yatirim">Yatirim</Option>
-                    <Option value="hediye">Hediye</Option>
-                    <Option value="diger_gelir">Diğer Gelir</Option>
-                    <Option value="diger_gider">Diğer Gider</Option>
+                  <Select placeholder="Kategori Seçin">
+                    {categoriesSelect.map((select) => (
+                      <Option key={select.value} value={select.value}>
+                        {select.label}
+                      </Option>
+                    ))}
                   </Select>
                 </Form.Item>
 
@@ -132,6 +130,7 @@ const IncomeExpensePage = () => {
             </Form>
           </Card>
         </Col>
+
         <Col lg={12}>
           <Card title="Son İşlemler">
             <List

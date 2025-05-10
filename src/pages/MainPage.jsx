@@ -8,6 +8,9 @@ import {
   Input,
   Select,
   InputNumber,
+  Button,
+  Form,
+  Segmented,
 } from "antd";
 import {
   UserOutlined,
@@ -22,6 +25,7 @@ import IncomeExpensePage from "./IncomeExpensePage";
 import CalendarPage from "./CalendarPage";
 
 import "./MainPage.css";
+import Title from "antd/es/typography/Title";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -47,22 +51,22 @@ const menuItems = [
 ];
 
 const jobOptions = [
-  { value: "engineer", label: "Mühendis" },
-  { value: "teacher", label: "Öğretmen" },
-  { value: "doctor", label: "Doktor" },
-  { value: "student", label: "Öğrenci" },
-  { value: "other", label: "Diğer" },
+  { value: "Mühendis", label: "Mühendis" },
+  { value: "Öğretmen", label: "Öğretmen" },
+  { value: "Doktor", label: "Doktor" },
+  { value: "Öğrenci", label: "Öğrenci" },
+  { value: "Diğer", label: "Diğer" },
 ];
 
 const MainPage = () => {
   const [selectedKey, setSelectedKey] = useState("1");
   const [address, setAddress] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [age, setAge] = useState(null);
-  const [job, setJob] = useState(undefined);
+  const [age, setAge] = useState("");
+  const [job, setJob] = useState("");
   const [otherJob, setOtherJob] = useState("");
+  const [gender, setGender] = useState("");
   const [open, setOpen] = useState(false);
-  const currentYear = new Date().getFullYear();
 
   const renderContent = (key) => {
     switch (key) {
@@ -111,13 +115,18 @@ const MainPage = () => {
   return (
     <Layout className="layout-container">
       <Sider className="sider">
-        <div className="sider-header">Bütçe Yönetici</div>
+        <Title
+          level={3}
+          style={{ color: "white", textAlign: "center", paddingTop: "20px" }}
+        >
+          Bütçe Yönetici
+        </Title>
         <Menu
           theme="dark"
           onClick={(e) => handleMenuClick(e.key)}
-          selectedKeys={selectedKey}
+          selectedKeys={[selectedKey]}
           items={menuItems}
-          className="sider-menu"
+          style={{ marginTop: "20px" }}
         />
       </Sider>
       <Layout>
@@ -133,7 +142,7 @@ const MainPage = () => {
         </Content>
 
         <Footer className="footer">
-          © {currentYear} Bütçe Yönetimi | Tüm Hakları Saklıdır.
+          © {new Date().getFullYear()} Bütçe Yönetimi | Tüm Hakları Saklıdır.
         </Footer>
       </Layout>
 
@@ -142,68 +151,61 @@ const MainPage = () => {
         centered
         open={open}
         onCancel={closeModal}
-        width={600}
         footer={[
-          <button
+          <Button
             key="save"
             className="modal-footer-button-save"
             onClick={handleSaveSettings}
           >
             Kaydet
-          </button>,
-          <button
+          </Button>,
+          <Button
             key="cancel"
             className="modal-footer-button-cancel"
             onClick={closeModal}
           >
             İptal
-          </button>,
+          </Button>,
         ]}
       >
-        <div className="modal-content">
-          <div className="modal-group">
-            <h1 className="modal-label">Ad Soyad</h1>
-            <div className="modal-input-static">Tuna Bozlak</div>
-          </div>
+        <div className="modal-group">
+          <h1 className="modal-label">Ad Soyad</h1>
+          <div className="modal-input-static">Tuna Bozlak</div>
+        </div>
 
-          <div className="modal-group">
-            <h1 className="modal-label">E-Posta</h1>
-            <div className="modal-input-static">a@gmail.com</div>
-          </div>
+        <div className="modal-group">
+          <h1 className="modal-label">E-Posta</h1>
+          <div className="modal-input-static">a@gmail.com</div>
+        </div>
 
-          <div className="modal-group">
-            <h1 className="modal-label">Telefon Numarası</h1>
+        <Form>
+          <Form.Item>
+            <Title level={5}>Telefon Numarası</Title>
             <Input
               placeholder="Telefon numarası giriniz..."
-              value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              className="modal-input"
             />
-          </div>
+          </Form.Item>
 
-          <div className="modal-group">
-            <h1 className="modal-label">Yaş</h1>
+          <Form.Item>
+            <Title level={5}>Yaş</Title>
             <InputNumber
               min={1}
               placeholder="Yaşınızı giriniz..."
-              value={age}
               onChange={(value) => setAge(value)}
-              className="modal-input-number"
             />
-          </div>
+          </Form.Item>
 
-          <div className="modal-group">
-            <h1 className="modal-label">Meslek</h1>
+          <Form.Item>
+            <Title level={5}>Meslek</Title>
             <Select
               placeholder="Mesleğinizi seçiniz..."
-              value={job}
-              onChange={(value) => {
-                setJob(value);
-                if (value !== "other") {
+              onChange={(e) => {
+                setJob(e);
+                if (e !== "Diğer") {
                   setOtherJob("");
                 }
               }}
-              className="modal-select"
             >
               {jobOptions.map((option) => (
                 <Option key={option.value} value={option.value}>
@@ -212,27 +214,35 @@ const MainPage = () => {
               ))}
             </Select>
 
-            {job === "other" && (
+            {job === "Diğer" && (
               <Input
                 placeholder="Lütfen mesleğinizi belirtin..."
                 value={otherJob}
                 onChange={(e) => setOtherJob(e.target.value)}
-                className="other-job-input"
               />
             )}
-          </div>
+          </Form.Item>
 
-          <div className="modal-group">
-            <h1 className="modal-label">Adres</h1>
+          <Form.Item>
+            <Title level={5}>Cinsiyet</Title>
+            <Select
+              placeholder="Cinsiyetinizi Seçiniz..."
+              onChange={(e) => setGender(e)}
+            >
+              <Select.Option value="kadın">Kadın</Select.Option>
+              <Select.Option value="erkek">Erkek</Select.Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item>
+            <Title level={5}>Adres</Title>
             <TextArea
               placeholder="Adres giriniz..."
-              className="modal-textarea"
               rows={3}
-              value={address}
               onChange={(e) => setAddress(e.target.value)}
             />
-          </div>
-        </div>
+          </Form.Item>
+        </Form>
       </Modal>
     </Layout>
   );

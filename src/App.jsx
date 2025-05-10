@@ -8,9 +8,7 @@ const App = () => {
     <div className="App">
       <IncomeExpenseProvider>
         <BrowserRouter>
-          <div className="flex flex-col">
-            <AppRouter />
-          </div>
+          <AppRouter />
         </BrowserRouter>
       </IncomeExpenseProvider>
     </div>

@@ -1,6 +1,8 @@
 import { useState, useContext } from "react";
-import { Calendar, Badge, Modal, List } from "antd";
+import { Calendar, Badge, Modal, List, Card, Typography } from "antd";
 import { IncomeExpenseContext } from "../context/IncomeExpenseContext";
+
+const { Title, Text } = Typography;
 
 const CalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
@@ -18,14 +20,14 @@ const CalendarPage = () => {
   const getListData = (value) => {
     const formattedValue = formatDate(value.toDate());
     return incomeExpenseList.filter(
-      (item) => formatDate(new Date(item.date)) === formattedValue
+      (item) => formatDate(new Date(item.date)) === formattedItem
     );
   };
 
-  const dateCellRender = (value) => {
-    const listData = getListData(value) || [];
+  const cellRender = (item) => {
+    const listData = getListData(item) || [];
     return (
-      <ul>
+      <ul style={{ listStyleType: "none" }}>
         {listData.map((item) => (
           <li key={item.id}>
             <Badge
@@ -38,12 +40,12 @@ const CalendarPage = () => {
     );
   };
 
-  const openModal = (value) => {
-    const selectedDates = value.toDate();
+  const openModal = (item) => {
+    const selectedDates = item.toDate();
     setSelectedDate(selectedDates);
-    const formattedValue = formatDate(selectedDates);
+    const formattedItem = formatDate(selectedDates);
     const dailyData = incomeExpenseList.filter(
-      (item) => formatDate(new Date(item.date)) === formattedValue
+      (item) => formatDate(new Date(item.date)) === formattedItem
     );
     setDailyIncomeExpense(dailyData);
     setOpen(true);
@@ -55,7 +57,7 @@ const CalendarPage = () => {
 
   return (
     <div>
-      <Calendar dateCellRender={dateCellRender} onSelect={openModal} />
+      <Calendar cellRender={cellRender} onSelect={openModal} />
 
       <Modal
         title={
@@ -73,10 +75,36 @@ const CalendarPage = () => {
           dataSource={dailyIncomeExpense}
           renderItem={(item) => (
             <List.Item>
-              <span style={{ color: item.type === "Gelir" ? "green" : "red" }}>
-                {item.type === "Gelir" ? "+" : "-"}
-              </span>
-              {item.amount} TL - {item.category} - {item.description}
+              <Card
+                style={{
+                  width: "100%",
+                  border: `2px solid ${
+                    item.type === "Gelir" ? "#3f8600" : "#cf1322"
+                  }`,
+                }}
+                title={
+                  <Title level={5}>
+                    {item.type === "Gelir" ? "Gelir" : "Gider"}
+                  </Title>
+                }
+              >
+                <div>
+                  <Text strong>Kategori: </Text>
+                  <Text>{item.category}</Text>
+                </div>
+
+                <div>
+                  <Text strong>Tutar: </Text>
+                  <Text>{item.amount} TL</Text>
+                </div>
+
+                {item.description && (
+                  <div>
+                    <Text strong>Açıklama: </Text>
+                    <Text>{item.description}</Text>
+                  </div>
+                )}
+              </Card>
             </List.Item>
           )}
         />

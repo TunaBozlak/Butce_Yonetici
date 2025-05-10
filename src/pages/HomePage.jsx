@@ -6,8 +6,6 @@ import { Link } from "react-router-dom";
 const { Header, Footer, Content } = Layout;
 
 const HomePage = () => {
-  const currentYear = new Date().getFullYear();
-
   return (
     <Layout className="layout">
       <Header className="header">
@@ -17,6 +15,7 @@ const HomePage = () => {
           <Link to="/login">
             <Button icon={<LoginOutlined />}>Giriş Yap</Button>
           </Link>
+
           <Link to="/register">
             <Button icon={<UserAddOutlined />}>Kayıt Ol</Button>
           </Link>
@@ -70,7 +69,7 @@ const HomePage = () => {
       </Content>
 
       <Footer className="footer">
-        © {currentYear} Bütçe Yönetici | Tüm Hakları Saklıdır.
+        © {new Date().getFullYear()} Bütçe Yönetici | Tüm Hakları Saklıdır.
       </Footer>
     </Layout>
   );

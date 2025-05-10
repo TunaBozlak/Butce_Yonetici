@@ -17,8 +17,8 @@ const CalendarPage = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const getListData = (value) => {
-    const formattedValue = formatDate(value.toDate());
+  const getListData = (item) => {
+    const formattedItem = formatDate(item.toDate());
     return incomeExpenseList.filter(
       (item) => formatDate(new Date(item.date)) === formattedItem
     );

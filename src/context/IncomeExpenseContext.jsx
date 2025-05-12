@@ -9,7 +9,7 @@ export const IncomeExpenseProvider = ({ children }) => {
   const fetchData = async () => {
     try {
       const response = await fetch(
-        "https://v1.nocodeapi.com/tuna/google_sheets/lxUnXsKRrCPsUWYn?tabId=budget"
+        "https://v1.nocodeapi.com/tunabozlak37/google_sheets/erDdRuTCbOPSqGHP?tabId=budget"
       );
       const result = await response.json();
       const data = result.data;

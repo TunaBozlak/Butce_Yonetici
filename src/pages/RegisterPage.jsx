@@ -17,16 +17,17 @@ const RegisterPage = () => {
     };
 
     fetch(
-      "https://v1.nocodeapi.com/tuna/google_sheets/lxUnXsKRrCPsUWYn?tabId=user",
+      "https://v1.nocodeapi.com/tunabozlak37/google_sheets/erDdRuTCbOPSqGHP?tabId=user",
       requestOptions
     )
       .then((response) => response.json())
       .then((result) => {
+        console.log(result);
         localStorage.setItem("row_id", result.row_id);
         localStorage.setItem("mail", result.mail);
 
         alert("Kayıt Başarılı!");
-        navigate("/main");
+        navigate("/login");
       })
       .catch((error) => console.log("error", error));
   };

@@ -127,16 +127,60 @@ const DashboardPage = () => {
   };
 
   const handleDelete = () => {
-    deleteIncomeExpense(selectedItem.id);
-    setOpen(false);
-    form.resetFields();
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    myHeaders.append("Authorization", "Bearer jwQkdPBHhAsLpBSJ");
+
+    var requestOptions = {
+      method: "delete",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    fetch(
+      `https://v1.nocodeapi.com/tunabozlak37/google_sheets/NuGcGYozKOHcqskL?tabId=budget&row_id=${selectedItem.id}`,
+      requestOptions
+    )
+      .then((response) => response.text())
+      .then(() => {
+        alert("Silme işlemi başarılı");
+        setOpen(false);
+        form.resetFields();
+      })
+      .catch((error) => console.log("error", error));
+    //deleteIncomeExpense(selectedItem.id);
   };
 
   const handleUpdate = () => {
     form.validateFields().then((values) => {
-      updateIncomeExpense(selectedItem.id, values);
-      setOpen(false);
-      form.resetFields();
+      var myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+
+      var requestOptions = {
+        method: "put",
+        headers: myHeaders,
+        redirect: "follow",
+        body: JSON.stringify({
+          row_id: selectedItem.id,
+          category: values.category,
+          amount: values.amount,
+          description: values.description || "",
+        }),
+      };
+
+      fetch(
+        "https://v1.nocodeapi.com/tunabozlak37/google_sheets/erDdRuTCbOPSqGHP?tabId=budget",
+        requestOptions
+      )
+        .then((response) => response.text())
+        .then(() => {
+          alert("Güncelleme işlemi başarılı!");
+          setOpen(false);
+          form.resetFields();
+        })
+        .catch((error) => console.log("error", error));
+
+      //updateIncomeExpense(selectedItem.id, values);
     });
   };
 
@@ -176,7 +220,15 @@ const DashboardPage = () => {
             >
               Ara
             </Button>
-            <Button onClick={clearFilters} size="small" style={{ width: 90 }}>
+            <Button
+              onClick={() => {
+                clearFilters();
+                setSelectedKeys([]);
+                confirm({ closeDropdown: false });
+              }}
+              size="small"
+              style={{ width: 90 }}
+            >
               Temizle
             </Button>
           </Space>
@@ -187,6 +239,10 @@ const DashboardPage = () => {
       filterIcon: (filtered) => (
         <SearchOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
       ),
+      filterDropdownProps: {
+        getPopupContainer: (triggerNode) => triggerNode.parentNode,
+        placement: "top",
+      },
     },
     {
       title: "Tarih",
@@ -195,27 +251,21 @@ const DashboardPage = () => {
       sorter: (a, b) => new Date(a.date) - new Date(b.date),
       sortDirections: ["ascend", "descend"],
       filterDropdown: ({ setSelectedKeys, confirm }) => (
-        <div style={{ padding: 8 }}>
+        <div style={{ padding: 8, width: "150px" }}>
           <DatePicker
-            onChange={(dateString) =>
-              setSelectedKeys(dateString ? [dateString] : [])
-            }
+            onChange={(date, dateString) => {
+              setSelectedKeys(dateString ? [dateString] : []);
+              confirm();
+            }}
             style={{ marginBottom: 8, display: "block" }}
           />
-          <Space>
-            <Button
-              type="primary"
-              onClick={confirm}
-              icon={<SearchOutlined />}
-              size="small"
-              style={{ width: 90 }}
-            >
-              Filtrele
-            </Button>
-          </Space>
         </div>
       ),
       onFilter: (value, item) => item.date.startsWith(value),
+      filterDropdownProps: {
+        getPopupContainer: (triggerNode) => triggerNode.parentNode,
+        placement: "top",
+      },
     },
     {
       title: "Tutar",
@@ -249,13 +299,17 @@ const DashboardPage = () => {
         },
       ],
       onFilter: (value, item) => item.type === value,
+      filterDropdownProps: {
+        getPopupContainer: (triggerNode) => triggerNode.parentNode,
+        placement: "top",
+      },
     },
     {
       title: "İşlemler",
       key: "actions",
       render: (_, item) => (
         <Space size="middle">
-          <Button type="link" onClick={() => showModal(item)}>
+          <Button type="link" onClick={() => openModal(item)}>
             Düzenle
           </Button>
         </Space>

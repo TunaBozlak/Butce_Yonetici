@@ -1,5 +1,7 @@
 import { useState, useContext } from "react";
-import { Calendar, Badge, Modal, List, Card, Typography } from "antd";
+import { Calendar, Badge, Modal, List, Card, Typography, Button } from "antd";
+import { MailOutlined } from "@ant-design/icons";
+
 import { IncomeExpenseContext } from "../context/IncomeExpenseContext";
 
 const { Title, Text } = Typography;
@@ -54,9 +56,15 @@ const CalendarPage = () => {
   const closeModal = () => {
     setOpen(false);
   };
+  const handleSendReport = () => {
+    alert("Takvim bilgileri e-posta adresinize gönderilmiştir.");
+  };
 
   return (
     <div>
+      <Button type="primary" icon={<MailOutlined />} onClick={handleSendReport}>
+        Rapor Al
+      </Button>
       <Calendar cellRender={cellRender} onSelect={openModal} />
 
       <Modal

@@ -4,8 +4,35 @@ import "./LoginPage.css";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const handleLogin = () => {
-    navigate("/main");
+
+  const handleLogin = (values) => {
+    const { mail, password } = values;
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var requestOptions = {
+      method: "get",
+      headers: myHeaders,
+      redirect: "follow",
+    };
+
+    fetch(
+      "https://v1.nocodeapi.com/tuna/google_sheets/lxUnXsKRrCPsUWYn?tabId=user",
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then((result) => {
+        const user = result.data.find(
+          (item) => item.mail === mail && item.password === password
+        );
+
+        if (user) {
+          alert("Giriş başarılı!");
+          navigate("/main");
+        } else {
+          alert("E-posta veya şifre hatalı!");
+        }
+      })
+      .catch((error) => console.log("error", error));
   };
   return (
     <div className="login-page-container">
@@ -15,11 +42,11 @@ const LoginPage = () => {
         className="login-form"
         onFinish={handleLogin}
       >
-        <Form.Item label="E-posta">
+        <Form.Item label="E-posta" name="mail">
           <Input required />
         </Form.Item>
 
-        <Form.Item label="Şifre">
+        <Form.Item label="Şifre" name="password">
           <Input.Password required />
         </Form.Item>
 

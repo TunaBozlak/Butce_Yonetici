@@ -5,8 +5,27 @@ import "./RegisterPage.css";
 const RegisterPage = () => {
   const navigate = useNavigate();
 
-  const handleRegister = () => {
-    navigate("/main");
+  const handleRegister = (values) => {
+    const { name, surname, mail, password } = values;
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var requestOptions = {
+      method: "post",
+      headers: myHeaders,
+      redirect: "follow",
+      body: JSON.stringify([[name, surname, mail, password]]),
+    };
+
+    fetch(
+      "https://v1.nocodeapi.com/tuna/google_sheets/lxUnXsKRrCPsUWYn?tabId=user",
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then(() => {
+        alert("Kayıt Başarılı!");
+        navigate("/main");
+      })
+      .catch((error) => console.log("error", error));
   };
 
   return (
@@ -17,19 +36,19 @@ const RegisterPage = () => {
         className="register-form"
         onFinish={handleRegister}
       >
-        <Form.Item label="Ad">
+        <Form.Item label="Ad" name="name">
           <Input required />
         </Form.Item>
 
-        <Form.Item label="Soyad">
+        <Form.Item label="Soyad" name="surname">
           <Input required />
         </Form.Item>
 
-        <Form.Item label="E-posta">
+        <Form.Item label="E-posta" name="mail">
           <Input required />
         </Form.Item>
 
-        <Form.Item label="Şifre">
+        <Form.Item label="Şifre" name="password">
           <Input.Password required />
         </Form.Item>
 

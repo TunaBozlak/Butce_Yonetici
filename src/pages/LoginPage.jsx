@@ -26,6 +26,9 @@ const LoginPage = () => {
         );
 
         if (user) {
+          localStorage.setItem("userMail", user.mail);
+          localStorage.setItem("userName", user.name);
+          localStorage.setItem("userSurname", user.surname);
           alert("Giriş başarılı!");
           navigate("/main");
         } else {

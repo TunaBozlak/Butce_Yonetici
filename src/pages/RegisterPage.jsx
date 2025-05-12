@@ -21,7 +21,10 @@ const RegisterPage = () => {
       requestOptions
     )
       .then((response) => response.json())
-      .then(() => {
+      .then((result) => {
+        localStorage.setItem("row_id", result.row_id);
+        localStorage.setItem("mail", result.mail);
+
         alert("Kayıt Başarılı!");
         navigate("/main");
       })

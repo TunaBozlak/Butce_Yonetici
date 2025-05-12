@@ -24,11 +24,10 @@ const LoginPage = () => {
         const user = result.data.find(
           (item) => item.mail === mail && item.password === password
         );
-
+        console.log(user);
         if (user) {
-          localStorage.setItem("userMail", user.mail);
-          localStorage.setItem("userName", user.name);
-          localStorage.setItem("userSurname", user.surname);
+          localStorage.setItem("row_id", user.row_id);
+          localStorage.setItem("mail", user.mail);
           alert("Giriş başarılı!");
           navigate("/main");
         } else {

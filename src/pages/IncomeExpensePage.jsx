@@ -39,17 +39,49 @@ const IncomeExpensePage = () => {
   const { addIncomeExpense, incomeExpenseList } =
     useContext(IncomeExpenseContext);
   const [type, setType] = useState("gelir");
+  const mail = localStorage.getItem("mail");
 
   const handleAdd = (items) => {
     const newItem = {
-      ...items,
-      amount: Number(items.amount),
+      mail: mail,
+      category: items.category,
       date: items.date.format("YYYY-MM-DD"),
+      amount: Number(items.amount),
       type: type === "gelir" ? "Gelir" : "Gider",
+      description: items.description,
     };
-    addIncomeExpense(newItem);
-    form.resetFields();
-    setType("");
+    const dataToSend = [
+      [
+        newItem.mail,
+        newItem.category,
+        newItem.date,
+        newItem.amount,
+        newItem.type,
+        newItem.description,
+      ],
+    ];
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var requestOptions = {
+      method: "post",
+      headers: myHeaders,
+      redirect: "follow",
+      body: JSON.stringify(dataToSend),
+    };
+
+    fetch(
+      "https://v1.nocodeapi.com/tuna/google_sheets/lxUnXsKRrCPsUWYn?tabId=budget",
+      requestOptions
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        alert("Yeni veri eklendi");
+        //addIncomeExpense(newItem);
+        form.resetFields();
+        setType("gelir");
+      })
+      .catch((error) => console.log("error", error));
   };
 
   const handleTypeChange = (item) => {

@@ -127,9 +127,9 @@ const DashboardPage = () => {
   };
 
   const handleDelete = () => {
+    const row_id = selectedItem.id;
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
-    myHeaders.append("Authorization", "Bearer jwQkdPBHhAsLpBSJ");
 
     var requestOptions = {
       method: "delete",
@@ -138,7 +138,7 @@ const DashboardPage = () => {
     };
 
     fetch(
-      `https://v1.nocodeapi.com/tunabozlak37/google_sheets/NuGcGYozKOHcqskL?tabId=budget&row_id=${selectedItem.id}`,
+      `https://v1.nocodeapi.com/tunabozlak37/google_sheets/erDdRuTCbOPSqGHP?tabId=budget&row_id=${row_id}`,
       requestOptions
     )
       .then((response) => response.text())

@@ -60,7 +60,7 @@ const IncomeExpensePage = () => {
         newItem.description,
       ],
     ];
-    var myHeaders = new Headers();
+    /* var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: "post",
@@ -81,7 +81,8 @@ const IncomeExpensePage = () => {
         form.resetFields();
         setType("gelir");
       })
-      .catch((error) => console.log("error", error));
+      .catch((error) => console.log("error", error));*/
+    addIncomeExpense(newItem);
   };
 
   const handleTypeChange = (item) => {

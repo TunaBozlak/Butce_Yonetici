@@ -7,7 +7,7 @@ const RegisterPage = () => {
 
   const handleRegister = (values) => {
     const { name, surname, mail, password } = values;
-    var myHeaders = new Headers();
+    /*var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: "post",
@@ -29,7 +29,8 @@ const RegisterPage = () => {
         alert("Kayıt Başarılı!");
         navigate("/login");
       })
-      .catch((error) => console.log("error", error));
+      .catch((error) => console.log("error", error));*/
+    navigate("/login");
   };
 
   return (

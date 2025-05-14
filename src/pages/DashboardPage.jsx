@@ -128,7 +128,7 @@ const DashboardPage = () => {
 
   const handleDelete = () => {
     const row_id = selectedItem.id;
-    var myHeaders = new Headers();
+    /* var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     var requestOptions = {
@@ -147,13 +147,13 @@ const DashboardPage = () => {
         setOpen(false);
         form.resetFields();
       })
-      .catch((error) => console.log("error", error));
-    //deleteIncomeExpense(selectedItem.id);
+      .catch((error) => console.log("error", error));*/
+    deleteIncomeExpense(selectedItem.id);
   };
 
   const handleUpdate = () => {
     form.validateFields().then((values) => {
-      var myHeaders = new Headers();
+      /*var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
 
       var requestOptions = {
@@ -178,9 +178,9 @@ const DashboardPage = () => {
           setOpen(false);
           form.resetFields();
         })
-        .catch((error) => console.log("error", error));
+        .catch((error) => console.log("error", error));*/
 
-      //updateIncomeExpense(selectedItem.id, values);
+      updateIncomeExpense(selectedItem.id, values);
     });
   };
 

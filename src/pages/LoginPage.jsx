@@ -7,7 +7,7 @@ const LoginPage = () => {
 
   const handleLogin = (values) => {
     const { mail, password } = values;
-    var myHeaders = new Headers();
+    /* var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: "get",
@@ -28,13 +28,15 @@ const LoginPage = () => {
         if (user) {
           localStorage.setItem("row_id", user.row_id);
           localStorage.setItem("mail", user.mail);
+          localStorage.setItem("name",user.name)
           alert("Giriş başarılı!");
           navigate("/main");
         } else {
           alert("E-posta veya şifre hatalı!");
         }
       })
-      .catch((error) => console.log("error", error));
+      .catch((error) => console.log("error", error));*/
+    navigate("/main");
   };
   return (
     <div className="login-page-container">

@@ -175,7 +175,7 @@ const MainPage = () => {
   const userMenu = (
     <Menu>
       <Menu.Item icon={<SettingOutlined />} onClick={openModal}>
-        Ayarlar
+        Profil
       </Menu.Item>
       <Menu.Item icon={<LogoutOutlined />}>
         <a href="/">Çıkış</a>
@@ -218,7 +218,7 @@ const MainPage = () => {
       </Layout>
 
       <Modal
-        title="AYARLAR"
+        title="PROFİL"
         centered
         open={open}
         onCancel={closeModal}

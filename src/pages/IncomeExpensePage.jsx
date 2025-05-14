@@ -60,7 +60,7 @@ const IncomeExpensePage = () => {
         newItem.description,
       ],
     ];
-    /* var myHeaders = new Headers();
+    var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: "post",
@@ -70,7 +70,7 @@ const IncomeExpensePage = () => {
     };
 
     fetch(
-      "https://v1.nocodeapi.com/tunabozlak37/google_sheets/erDdRuTCbOPSqGHP?tabId=budget",
+      "https://v1.nocodeapi.com/bettermessi1/google_sheets/fvwLcdhmUbEAKaWM?tabId=budget",
       requestOptions
     )
       .then((response) => response.json())
@@ -81,14 +81,17 @@ const IncomeExpensePage = () => {
         form.resetFields();
         setType("gelir");
       })
-      .catch((error) => console.log("error", error));*/
-    addIncomeExpense(newItem);
+      .catch((error) => console.log("error", error));
   };
 
   const handleTypeChange = (item) => {
     setType(item);
   };
-
+  const blockedDate = (now) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return now < today;
+  };
   return (
     <div style={{ padding: 24 }}>
       <Row gutter={36}>
@@ -144,7 +147,10 @@ const IncomeExpensePage = () => {
                     { required: true, message: "Lütfen tarihi seçiniz!" },
                   ]}
                 >
-                  <DatePicker style={{ width: "150px" }} />
+                  <DatePicker
+                    style={{ width: "150px" }}
+                    disabledDate={blockedDate}
+                  />
                 </Form.Item>
               </Space>
 

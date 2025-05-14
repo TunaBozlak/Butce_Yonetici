@@ -7,7 +7,7 @@ const RegisterPage = () => {
 
   const handleRegister = (values) => {
     const { name, surname, mail, password } = values;
-    /*var myHeaders = new Headers();
+    var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: "post",
@@ -17,7 +17,7 @@ const RegisterPage = () => {
     };
 
     fetch(
-      "https://v1.nocodeapi.com/tunabozlak37/google_sheets/erDdRuTCbOPSqGHP?tabId=user",
+      "https://v1.nocodeapi.com/bettermessi1/google_sheets/fvwLcdhmUbEAKaWM?tabId=user",
       requestOptions
     )
       .then((response) => response.json())
@@ -29,8 +29,7 @@ const RegisterPage = () => {
         alert("Kayıt Başarılı!");
         navigate("/login");
       })
-      .catch((error) => console.log("error", error));*/
-    navigate("/login");
+      .catch((error) => console.log("error", error));
   };
 
   return (

@@ -10,7 +10,6 @@ import {
   InputNumber,
   Button,
   Form,
-  Segmented,
 } from "antd";
 import {
   UserOutlined,
@@ -67,6 +66,9 @@ const MainPage = () => {
   const [otherJob, setOtherJob] = useState("");
   const [gender, setGender] = useState("");
   const [open, setOpen] = useState(false);
+  const row_id = localStorage.getItem("row_id");
+  const mail = localStorage.getItem("mail");
+  const name = localStorage.getItem("name");
 
   const renderContent = (key) => {
     switch (key) {
@@ -85,6 +87,36 @@ const MainPage = () => {
   };
   const { title, component } = renderContent(selectedKey);
 
+  const getUserProfile = () => {
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    fetch(
+      "https://v1.nocodeapi.com/bettermessi1/google_sheets/fvwLcdhmUbEAKaWM?tabId=user",
+      {
+        method: "get",
+        headers: myHeaders,
+        redirect: "follow",
+      }
+    )
+      .then((response) => response.json())
+      .then((result) => {
+        const users = result.data || result;
+        const currentUser = users.find((user) => user.mail === mail);
+        if (currentUser) {
+          setPhoneNumber(currentUser.phoneNumber || "");
+          setAge(currentUser.age || "");
+          setJob(currentUser.job || "");
+          setGender(currentUser.gender || "");
+          setAddress(currentUser.address || "");
+        }
+      })
+      .catch((error) => console.log("Kullanıcı verisi alınamadı:", error));
+  };
+  useEffect(() => {
+    getUserProfile();
+  }, []);
+
   const openModal = () => {
     setOpen(true);
   };
@@ -98,7 +130,46 @@ const MainPage = () => {
   };
 
   const handleSaveSettings = () => {
-    closeModal();
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+
+    const updatedData = {
+      row_id: row_id,
+      phoneNumber: phoneNumber,
+      age: age,
+      job: job,
+      gender: gender,
+      address: address,
+    };
+
+    var requestOptions = {
+      method: "put",
+      headers: myHeaders,
+      redirect: "follow",
+      body: JSON.stringify(updatedData),
+    };
+
+    fetch(
+      "https://v1.nocodeapi.com/bettermessi1/google_sheets/fvwLcdhmUbEAKaWM?tabId=user",
+      requestOptions
+    )
+      .then((response) => {
+        if (!response.ok) {
+          console.error("API Hatası:", response.status, response.statusText);
+          throw new Error("Güncelleme başarısız oldu!");
+        }
+        return response.json();
+      })
+      .then((result) => {
+        alert("Profil bilgileri güncellenmiştir.");
+
+        getUserProfile();
+        closeModal();
+      })
+      .catch((error) => {
+        console.error("Hata:", error);
+        alert("Bir hata oluştu! Güncelleme başarısız.");
+      });
   };
 
   const userMenu = (
@@ -170,18 +241,19 @@ const MainPage = () => {
       >
         <div className="modal-group">
           <h1 className="modal-label">Ad Soyad</h1>
-          <div className="modal-input-static">Tuna Bozlak</div>
+          <div className="modal-input-static">{name}</div>
         </div>
 
         <div className="modal-group">
           <h1 className="modal-label">E-Posta</h1>
-          <div className="modal-input-static">a@gmail.com</div>
+          <div className="modal-input-static">{mail}</div>
         </div>
 
         <Form>
           <Form.Item>
             <Title level={5}>Telefon Numarası</Title>
             <Input
+              value={phoneNumber}
               placeholder="Telefon numarası giriniz..."
               onChange={(e) => setPhoneNumber(e.target.value)}
             />
@@ -191,6 +263,7 @@ const MainPage = () => {
             <Title level={5}>Yaş</Title>
             <InputNumber
               min={1}
+              value={age}
               placeholder="Yaşınızı giriniz..."
               onChange={(value) => setAge(value)}
             />
@@ -199,12 +272,10 @@ const MainPage = () => {
           <Form.Item>
             <Title level={5}>Meslek</Title>
             <Select
+              value={job}
               placeholder="Mesleğinizi seçiniz..."
               onChange={(e) => {
                 setJob(e);
-                if (e !== "Diğer") {
-                  setOtherJob("");
-                }
               }}
             >
               {jobOptions.map((option) => (
@@ -213,19 +284,12 @@ const MainPage = () => {
                 </Option>
               ))}
             </Select>
-
-            {job === "Diğer" && (
-              <Input
-                placeholder="Lütfen mesleğinizi belirtin..."
-                value={otherJob}
-                onChange={(e) => setOtherJob(e.target.value)}
-              />
-            )}
           </Form.Item>
 
           <Form.Item>
             <Title level={5}>Cinsiyet</Title>
             <Select
+              value={gender}
               placeholder="Cinsiyetinizi Seçiniz..."
               onChange={(e) => setGender(e)}
             >
@@ -237,6 +301,7 @@ const MainPage = () => {
           <Form.Item>
             <Title level={5}>Adres</Title>
             <TextArea
+              value={address}
               placeholder="Adres giriniz..."
               rows={3}
               onChange={(e) => setAddress(e.target.value)}

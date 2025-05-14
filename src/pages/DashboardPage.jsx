@@ -12,6 +12,9 @@ import {
   Modal,
   Form,
   Select,
+  Flex,
+  Progress,
+  Tooltip,
 } from "antd";
 import {
   ArrowUpOutlined,
@@ -24,14 +27,11 @@ import {
 } from "@ant-design/icons";
 import {
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
   BarChart,
   Bar,
   XAxis,
   YAxis,
-  Tooltip,
+  Legend,
 } from "recharts";
 import { IncomeExpenseContext } from "../context/IncomeExpenseContext";
 import Title from "antd/es/typography/Title";
@@ -128,7 +128,7 @@ const DashboardPage = () => {
 
   const handleDelete = () => {
     const row_id = selectedItem.id;
-    /* var myHeaders = new Headers();
+    var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
 
     var requestOptions = {
@@ -138,7 +138,7 @@ const DashboardPage = () => {
     };
 
     fetch(
-      `https://v1.nocodeapi.com/tunabozlak37/google_sheets/erDdRuTCbOPSqGHP?tabId=budget&row_id=${row_id}`,
+      `https://v1.nocodeapi.com/bettermessi1/google_sheets/fvwLcdhmUbEAKaWM?tabId=budget&row_id=${row_id}`,
       requestOptions
     )
       .then((response) => response.text())
@@ -147,13 +147,12 @@ const DashboardPage = () => {
         setOpen(false);
         form.resetFields();
       })
-      .catch((error) => console.log("error", error));*/
-    deleteIncomeExpense(selectedItem.id);
+      .catch((error) => console.log("error", error));
   };
 
   const handleUpdate = () => {
     form.validateFields().then((values) => {
-      /*var myHeaders = new Headers();
+      var myHeaders = new Headers();
       myHeaders.append("Content-Type", "application/json");
 
       var requestOptions = {
@@ -169,7 +168,7 @@ const DashboardPage = () => {
       };
 
       fetch(
-        "https://v1.nocodeapi.com/tunabozlak37/google_sheets/erDdRuTCbOPSqGHP?tabId=budget",
+        "https://v1.nocodeapi.com/bettermessi1/google_sheets/fvwLcdhmUbEAKaWM?tabId=budget",
         requestOptions
       )
         .then((response) => response.text())
@@ -178,9 +177,7 @@ const DashboardPage = () => {
           setOpen(false);
           form.resetFields();
         })
-        .catch((error) => console.log("error", error));*/
-
-      updateIncomeExpense(selectedItem.id, values);
+        .catch((error) => console.log("error", error));
     });
   };
 
@@ -359,31 +356,35 @@ const DashboardPage = () => {
       <Row gutter={24} style={{ marginTop: 24 }}>
         <Col lg={8}>
           <Card title="Gelir / Gider Analizi">
-            <ResponsiveContainer height={250}>
-              <PieChart>
-                <Pie
-                  data={[
-                    { name: "Gelir", value: totalIncome, type: "Gelir" },
-                    { name: "Gider", value: totalExpense, type: "Gider" },
-                  ]}
-                  label
-                >
-                  <Cell fill={"#3f8600"} />
-                  <Cell fill={"#cf1322"} />
-                </Pie>
-                <Tooltip formatter={(value) => `${value} TL`} />
-              </PieChart>
-              <div style={{ textAlign: "center", marginTop: 16 }}>
-                <Space>
-                  <span style={{ color: "#3f8600" }}>
-                    <ArrowUpOutlined /> Gelir (%{incomePercent.toFixed(0)})
-                  </span>
-                  <span style={{ color: "#cf1322" }}>
-                    <ArrowDownOutlined /> Gider (%{expensePercent.toFixed(0)})
-                  </span>
-                </Space>
-              </div>
-            </ResponsiveContainer>
+            <Flex
+              vertical
+              style={{
+                height: "250px",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <Flex wrap gap="large" style={{}}>
+                <Tooltip title={`Gelir: ${totalIncome} TL`}>
+                  <Progress
+                    percent={incomePercent}
+                    format={(percent) => `${percent.toFixed(2)}%`}
+                    strokeColor="#3f8600"
+                    type="circle"
+                    size={150}
+                  />
+                </Tooltip>
+                <Tooltip title={`Gider: ${totalExpense} TL`}>
+                  <Progress
+                    percent={expensePercent}
+                    format={(percent) => `${percent.toFixed(2)}%`}
+                    strokeColor="#cf1322"
+                    type="circle"
+                    size={150}
+                  />
+                </Tooltip>
+              </Flex>
+            </Flex>
           </Card>
         </Col>
 
@@ -393,7 +394,16 @@ const DashboardPage = () => {
               <BarChart data={monthlyIncomeExpense}>
                 <XAxis dataKey="month" />
                 <YAxis />
-                <Tooltip formatter={(value) => `${value * 1000} TL`} />
+                <Legend
+                  layout="vertical"
+                  align="right"
+                  verticalAlign="top"
+                  formatter={(value) => {
+                    return value === "income"
+                      ? `Gelir (${totalIncome} TL)`
+                      : `Gider (${totalExpense} TL)`;
+                  }}
+                />
                 <Bar dataKey="income" fill="#3f8600" />
                 <Bar dataKey="expense" fill="#cf1322" />
               </BarChart>

@@ -60,12 +60,22 @@ const CalendarPage = () => {
     alert("Takvim bilgileri e-posta adresinize gönderilmiştir.");
   };
 
+  const blockedDate = (now) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return now < today;
+  };
+
   return (
     <div>
       <Button type="primary" icon={<MailOutlined />} onClick={handleSendReport}>
         Rapor Al
       </Button>
-      <Calendar cellRender={cellRender} onSelect={openModal} />
+      <Calendar
+        cellRender={cellRender}
+        onSelect={openModal}
+        disabledDate={blockedDate}
+      />
 
       <Modal
         title={

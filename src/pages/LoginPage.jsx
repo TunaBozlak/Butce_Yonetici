@@ -7,7 +7,7 @@ const LoginPage = () => {
 
   const handleLogin = (values) => {
     const { mail, password } = values;
-    /* var myHeaders = new Headers();
+    var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
       method: "get",
@@ -16,7 +16,7 @@ const LoginPage = () => {
     };
 
     fetch(
-      "https://v1.nocodeapi.com/tunabozlak37/google_sheets/erDdRuTCbOPSqGHP?tabId=user",
+      "https://v1.nocodeapi.com/bettermessi1/google_sheets/fvwLcdhmUbEAKaWM?tabId=user",
       requestOptions
     )
       .then((response) => response.json())
@@ -28,15 +28,14 @@ const LoginPage = () => {
         if (user) {
           localStorage.setItem("row_id", user.row_id);
           localStorage.setItem("mail", user.mail);
-          localStorage.setItem("name",user.name)
+          localStorage.setItem("name", user.name);
           alert("Giriş başarılı!");
           navigate("/main");
         } else {
           alert("E-posta veya şifre hatalı!");
         }
       })
-      .catch((error) => console.log("error", error));*/
-    navigate("/main");
+      .catch((error) => console.log("error", error));
   };
   return (
     <div className="login-page-container">

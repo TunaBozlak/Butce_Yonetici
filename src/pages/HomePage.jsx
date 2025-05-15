@@ -1,7 +1,8 @@
-import { Layout, Button } from "antd";
+import { Layout, Button, Row } from "antd";
 import { LoginOutlined, UserAddOutlined } from "@ant-design/icons";
 import "./HomePage.css";
 import { Link } from "react-router-dom";
+import Title from "antd/es/typography/Title";
 
 const { Header, Footer, Content } = Layout;
 
@@ -25,17 +26,19 @@ const HomePage = () => {
       <Content className="content">
         <div className="content-inner">
           <div className="hero-section">
-            <h2 className="hero-title">Bütçenizi Kolayca Yönetin</h2>
+            <Title level={2}>Bütçenizi Kolayca Yönetin</Title>
             <p className="hero-subtitle">
               Gelir ve giderlerinizi takip edin, tasarruf hedeflerinizi
               belirleyin ve finansal durumunuzu kontrol altına alın.
             </p>
           </div>
 
-          <div className="features-section">
+          <Row className="features-section">
             <div className="feature-item">
               <img src="./images/g.png" className="feature-image" />
-              <h3 className="feature-title">Gelir Takibi</h3>
+              <Title level={4} style={{ color: "#2d3748" }}>
+                Gelir Takibi
+              </Title>
               <p className="feature-description">
                 Gelirlerinizi kolayca kaydedin ve analiz edin.
               </p>
@@ -43,7 +46,9 @@ const HomePage = () => {
 
             <div className="feature-item">
               <img src="./images/g1.png" className="feature-image" />
-              <h3 className="feature-title">Gider Yönetimi</h3>
+              <Title level={4} style={{ color: "#2d3748" }}>
+                Gider Yönetimi
+              </Title>
               <p className="feature-description">
                 Harcamalarınızı kategorilere ayırarak kontrol edin.
               </p>
@@ -51,7 +56,9 @@ const HomePage = () => {
 
             <div className="feature-item">
               <img src="./images/g2.png" className="feature-image" />
-              <h3 className="feature-title">Tasarruf Hedefleri</h3>
+              <Title level={4} style={{ color: "#2d3748" }}>
+                Tasarruf Hedefleri
+              </Title>
               <p className="feature-description">
                 Hedeflerinizi belirleyin ve ilerlemenizi takip edin.
               </p>
@@ -59,12 +66,14 @@ const HomePage = () => {
 
             <div className="feature-item">
               <img src="./images/g3.png" className="feature-image" />
-              <h3 className="feature-title">Finansal Raporlama</h3>
+              <Title level={4} style={{ color: "#2d3748" }}>
+                Finansal Raporlama
+              </Title>
               <p className="feature-description">
                 Finansal durumunuzu detaylı raporlarla görüntüleyin.
               </p>
             </div>
-          </div>
+          </Row>
         </div>
       </Content>
 

@@ -42,12 +42,6 @@
   margin-bottom: 1.25rem;
 }
 
-.hero-title {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #2d3748;
-}
-
 .hero-subtitle {
   color: #718096;
   font-size: 1rem;
@@ -70,12 +64,6 @@
   margin-bottom: 0.75rem;
   max-width: 100%;
   height: auto;
-}
-
-.feature-title {
-  font-size: 1.125rem;
-  font-weight: bold;
-  color: #2d3748;
 }
 
 .feature-description {

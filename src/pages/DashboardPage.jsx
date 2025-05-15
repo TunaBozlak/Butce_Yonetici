@@ -60,6 +60,7 @@ const DashboardPage = () => {
 
   const [selectedItem, setSelectedItem] = useState(null);
   const [open, setOpen] = useState(false);
+  const [openReport, setOpenReport] = useState(false);
   const [monthlyIncomeExpense, setMonthlyIncomeExpense] = useState([]);
   const [form] = Form.useForm();
   const [totalIncome, setTotalIncome] = useState(0);
@@ -181,8 +182,11 @@ const DashboardPage = () => {
     });
   };
 
-  const handleSendReport = () => {
-    alert("Gelir ve Gider bilgileriniz e-posta adresinize gönderilmiştir.");
+  const openReportModal = () => {
+    setOpenReport(true);
+  };
+  const closeReportModal = () => {
+    setOpenReport(false);
   };
 
   const columns = [
@@ -426,7 +430,7 @@ const DashboardPage = () => {
                 <Button
                   type="primary"
                   icon={<MailOutlined />}
-                  onClick={handleSendReport}
+                  onClick={openReportModal}
                 >
                   Rapor Al
                 </Button>
@@ -496,6 +500,17 @@ const DashboardPage = () => {
             )}
           </Form>
         )}
+      </Modal>
+
+      <Modal
+        title="Rapor Gönderildi"
+        open={openReport}
+        onOk={closeReportModal}
+        cancelButtonProps={{ style: { display: "none" } }}
+      >
+        <span>
+          Gelir ve Gider bilgileriniz e-posta adresinize gönderilmiştir.
+        </span>
       </Modal>
     </div>
   );

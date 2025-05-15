@@ -10,6 +10,7 @@ const CalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState(null);
   const [open, setOpen] = useState(false);
   const [dailyIncomeExpense, setDailyIncomeExpense] = useState([]);
+  const [openReport, setOpenReport] = useState(false);
   const { incomeExpenseList } = useContext(IncomeExpenseContext);
 
   const formatDate = (date) => {
@@ -56,8 +57,11 @@ const CalendarPage = () => {
   const closeModal = () => {
     setOpen(false);
   };
-  const handleSendReport = () => {
-    alert("Takvim bilgileri e-posta adresinize gönderilmiştir.");
+  const openReportModal = () => {
+    setOpenReport(true);
+  };
+  const closeReportModal = () => {
+    setOpenReport(false);
   };
 
   const blockedDate = (now) => {
@@ -68,7 +72,7 @@ const CalendarPage = () => {
 
   return (
     <div>
-      <Button type="primary" icon={<MailOutlined />} onClick={handleSendReport}>
+      <Button type="primary" icon={<MailOutlined />} onClick={openReportModal}>
         Rapor Al
       </Button>
       <Calendar
@@ -126,6 +130,15 @@ const CalendarPage = () => {
             </List.Item>
           )}
         />
+      </Modal>
+
+      <Modal
+        title="Rapor Gönderildi"
+        open={openReport}
+        onOk={closeReportModal}
+        cancelButtonProps={{ style: { display: "none" } }}
+      >
+        <span>Takvim bilgileri e-posta adresinize gönderilmiştir.</span>
       </Modal>
     </div>
   );
